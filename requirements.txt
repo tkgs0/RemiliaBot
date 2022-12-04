@@ -1,0 +1,6 @@
+python-telegram-bot>=20.0a0
+APScheduler
+psutil
+asyncio
+httpx
+
