@@ -1,5 +1,6 @@
 import random
 from .utils import get_reply, get_chat_result, hello__reply
+from .looklike import Look
 
 
 async def reply(msg: str, NICKNAME: str):
@@ -15,6 +16,8 @@ async def reply(msg: str, NICKNAME: str):
         "在",
     ]:
         return random.choice(hello__reply)
+    if msg.startswith('你看我像'):
+        return Look.like()
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用ownthink获取智能回复

@@ -5,5 +5,9 @@
     "Remi",
     "remilia",
     "remi"
+  ],
+  "superusers": [
+    123456,
+    654321
   ]
 }

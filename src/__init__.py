@@ -1,4 +1,3 @@
-
 from pathlib import Path
 try:
     import ujson as json
@@ -18,6 +17,7 @@ datapath = Path().parent / 'data.json'
 _data = json.loads(datapath.read_text("utf-8"))
 TOKEN = _data['token']
 NICKNAME = _data['nickname']
+SUPERUSERS = _data['superusers']
 
 
 logging.basicConfig(
@@ -38,6 +38,15 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id = update.effective_chat.id,
         text = msg
+    )
+
+async def cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from .plugins.cmd import run
+    msg = update.message.text.replace('/cmd', '', 1).strip()
+    content = run(msg)
+    await context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = content
     )
 
 
@@ -72,6 +81,11 @@ class run():
     status_handler = CommandHandler('status', status)
     application.add_handler(status_handler)
 
+    cmd_handler = CommandHandler(
+        'cmd', cmd,
+        filters.TEXT & filters.User(SUPERUSERS)
+    )
+    application.add_handler(cmd_handler)
 
 
     chat_handler = MessageHandler(
