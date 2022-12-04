@@ -2,7 +2,7 @@ import os
 import time
 import psutil
 from datetime import datetime
-
+from src.utils.log import logger
 
 _status_msg = """
 > Status Overview
@@ -51,6 +51,7 @@ class Status():
                 - datetime.utcfromtimestamp(b).replace(microsecond=0)
             )
         except:
+            logger.warning("获取状态信息失败")
             return "获取状态信息失败", False
 
         msg = "アトリは、高性能ですから！"
@@ -82,5 +83,6 @@ class Status():
             msg=msg,
         )
 
+        logger.info(msg0)
         return msg0, is_ok
 

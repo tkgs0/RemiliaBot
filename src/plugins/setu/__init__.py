@@ -1,9 +1,10 @@
 from sys import exc_info
 import httpx
 from httpx import AsyncClient
-from loguru import logger
+from src.utils.log import logger
 
 async def get_setu(tag=[], r18=0, pixproxy='') -> list:
+    logger.info('loading...')
     async with AsyncClient() as client:
         req_url = 'https://api.lolicon.app/setu/v2'
         params = {

@@ -1,6 +1,6 @@
 python-telegram-bot>=20.0a0
+loguru
 APScheduler
 psutil
 asyncio
 httpx
-
