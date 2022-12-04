@@ -35,37 +35,33 @@ logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     await context.bot.send_message(
-        chat_id = message.chat_id,
+        chat_id = update.message.chat_id,
         text = f'Hello, This is {NICKNAME[0]}.'
     )
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     from .plugins.status import Status
     msg, _ = Status().get_status()
     await context.bot.send_message(
-        chat_id = message.chat_id,
+        chat_id = update.message.chat_id,
         text = msg
     )
 
 async def cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     from .plugins.cmd import run
-    msg = message.text.replace('/cmd', '', 1).strip()
+    msg = update.message.text.replace('/cmd', '', 1).strip()
     content = run(msg)
     await context.bot.send_message(
-        chat_id = message.chat_id,
+        chat_id = update.message.chat_id,
         text = content
     )
 
 async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     from .plugins.setu import get_setu
     tag = context.args
     content = await get_setu(
@@ -75,39 +71,37 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     if content[1]:
         await context.bot.send_photo(
-            chat_id = message.chat_id,
+            chat_id = update.message.chat_id,
             photo = content[0],
             caption = content[1]
         )
     else:
         await context.bot.send_message(
-            chat_id = message.chat_id,
+            chat_id = update.message.chat_id,
             text = content[0]
         )
 
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     from .plugins.chat import reply
-    msg = message.text
+    msg = update.message.text
     content = await reply(msg, NICKNAME[0])
     await context.bot.send_message(
-        chat_id = message.chat_id,
+        chat_id = update.message.chat_id,
         text = content
     )
 
 async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    logger.info(f'{message.chat.type.upper()} | [{message.chat_id}] {context._user_id}: {message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     from .plugins.chat import reply
-    msg = message.text
+    msg = update.message.text
     for i in NICKNAME:
         if msg.startswith(i):
             msg = msg.replace(i, '', 1)
             content = await reply(msg, NICKNAME[0])
             await context.bot.send_message(
-                chat_id = message.chat_id,
+                chat_id = update.message.chat_id,
                 text = content
             )
 
