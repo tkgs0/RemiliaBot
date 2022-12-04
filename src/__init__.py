@@ -49,6 +49,26 @@ async def cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = content
     )
 
+async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from .plugins.setu import get_setu
+    tag = context.args
+    content = await get_setu(
+        tag=tag,
+        r18=_data['setu']['r18'],
+        pixproxy=_data['setu']['pixproxy']
+    )
+    if content[1]:
+        await context.bot.send_photo(
+            chat_id = update.effective_chat.id,
+            photo = content[0],
+            caption = content[1]
+        )
+    else:
+        await context.bot.send_message(
+            chat_id = update.effective_chat.id,
+            text = content[0]
+        )
+
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     from .plugins.chat import reply
@@ -64,7 +84,7 @@ async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text
     for i in NICKNAME:
         if msg.startswith(i):
-            msg = msg.lstrip(i)
+            msg = msg.replace(i, '', 1)
             content = await reply(msg, NICKNAME[0])
             await context.bot.send_message(
                 chat_id = update.effective_chat.id,
@@ -86,6 +106,9 @@ class run():
         filters.TEXT & filters.User(SUPERUSERS)
     )
     application.add_handler(cmd_handler)
+
+    setu_handler = CommandHandler('setu', setu)
+    application.add_handler(setu_handler)
 
 
     chat_handler = MessageHandler(
