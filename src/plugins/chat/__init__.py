@@ -1,6 +1,33 @@
 import random
+from telegram import Update
+from telegram.ext import ContextTypes
+
+from utils.log import logger
+from config import NICKNAME
 from .utils import get_reply, get_chat_result, hello__reply
 from .looklike import Look
+
+
+async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    msg = update.message.text
+    content = await reply(msg, NICKNAME[0])
+    await context.bot.send_message(
+        chat_id = update.message.chat_id,
+        text = content
+    )
+
+async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    msg = update.message.text
+    for i in NICKNAME:
+        if msg.startswith(i):
+            msg = msg.replace(i, '', 1)
+            content = await reply(msg, NICKNAME[0])
+            await context.bot.send_message(
+                chat_id = update.message.chat_id,
+                text = content
+            )
 
 
 async def reply(msg: str, NICKNAME: str):
