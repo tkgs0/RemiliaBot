@@ -37,6 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 from .plugins import (
     chat,
+    chatGPT,
     cmd,
     setu,
     status
@@ -65,6 +66,9 @@ class run():
 
     setu_handler = CommandHandler('setu', setu.setu)
     application.add_handler(setu_handler)
+
+    chatGPT_handler = CommandHandler('chatGPT', chatGPT.chatGPT)
+    application.add_handler(chatGPT_handler)
 
 
     chat_handler = MessageHandler(

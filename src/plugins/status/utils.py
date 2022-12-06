@@ -51,7 +51,7 @@ class Status():
                 - datetime.utcfromtimestamp(b).replace(microsecond=0)
             )
         except:
-            logger.warning("获取状态信息失败")
+            logger.error("获取状态信息失败")
             return "获取状态信息失败", False
 
         msg = "アトリは、高性能ですから！"

@@ -15,14 +15,10 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pixproxy=SETU['pixproxy']
     )
     if content[1]:
-        await context.bot.send_photo(
-            chat_id = update.message.chat_id,
+        await update.message.reply_photo(
             photo = content[0],
             caption = content[1]
         )
     else:
-        await context.bot.send_message(
-            chat_id = update.message.chat_id,
-            text = content[0]
-        )
+        await update.message.reply_text(content[0])
 

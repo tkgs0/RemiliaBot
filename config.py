@@ -16,3 +16,9 @@ SETU = {
     'pixproxy': ''
 }
 
+def chatGPT_token():
+    # token获取方法参考 https://github.com/tkgs0/Telegram-Bot#
+    return {
+        'Authorization': '<API-KEY>',
+        'session_token': ''
+    }
