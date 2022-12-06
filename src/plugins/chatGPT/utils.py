@@ -21,8 +21,10 @@ def ask(user: int, msg: str):
     else:
         chatbot = Chatbot(CHATGPT, conversation_id=None)
 
-    chatbot.refresh_session()
-    resp = chatbot.get_chat_response(msg,output='text')
-    user_chat.update({user: [chatbot, time.time()]})
-
-    return resp['message']
+    try:
+        chatbot.refresh_session()
+        resp = chatbot.get_chat_response(msg,output='text')
+        user_chat.update({user: [chatbot, time.time()]})
+        return resp['message']
+    except Exception as e:
+        return str(e)
