@@ -86,7 +86,7 @@ class CodeRunner():
         try:
             res = requests.post(url, json=js)
         except Exception:
-            return "\n出错力，可能是API寄了..."
+            return "出错力，可能是API寄了..."
 
         payload = res.json()
         sent = False
@@ -101,7 +101,7 @@ class CodeRunner():
                 out += f"\n（太多了太多了...）"
 
             if out:
-                return f"\n{k}:\n{out}"
+                return f"{k}:\n{out}"
 
         if not sent:
-            return "\n运行完成，没任何输出呢..."
+            return "运行完成，没任何输出呢..."
