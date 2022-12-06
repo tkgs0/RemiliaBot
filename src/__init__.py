@@ -19,7 +19,7 @@ logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
 
 from .plugins import (
     chat,
-    # chatGPT,
+    chatGPT,
     cmd,
     setu,
     start,
@@ -32,7 +32,7 @@ class run():
 
     start.run(app)
     cmd.run(app)
-    # chatGPT.run(app)
+    chatGPT.run(app)
     setu.run(app)
     status.run(app)
 
