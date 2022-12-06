@@ -2,18 +2,11 @@ from revChatGPT.revChatGPT import Chatbot
 import time
 from config import chatGPT_token
 
+
 CHATGPT = chatGPT_token()
 
 user_chat = dict()
-'''
-{
-    user: [
-        chatbot,
-        time,
-        conversation_id
-    ]
-}
-'''
+
 
 def ask(user: int, msg: str):
     if not CHATGPT['session_token']:
@@ -30,10 +23,6 @@ def ask(user: int, msg: str):
 
     chatbot.refresh_session()
     resp = chatbot.get_chat_response(msg)
-    user_chat.update({
-        user: [
-            chatbot,
-            time.time()
-        ]
-    })
+    user_chat.update({user: [chatbot, time.time()]})
+
     return resp['message']
