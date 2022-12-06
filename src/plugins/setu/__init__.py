@@ -7,7 +7,7 @@ from .utils import get_setu
 
 
 async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    logger.info(f'\033[36;1mEvent\033[0m [{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     tag = context.args
     content = await get_setu(
         tag=tag,

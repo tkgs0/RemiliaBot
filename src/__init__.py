@@ -26,22 +26,35 @@ logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    logger.info(f'\033[36;1mEvent\033[0m [{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     await context.bot.send_message(
         chat_id = update.message.chat_id,
-        text = f'Hello, This is {NICKNAME[0]}.'
-    )
+        text = (
+            f'Hello, This is {NICKNAME[0]}.\n'
+            f'Your Telegram ID is: {context._user_id}'
+    ))
 
 
-from .plugins import chat, cmd, setu, status
+from .plugins import (
+    chat,
+    cmd,
+    setu,
+    status
+)
 
 class run():
     application = ApplicationBuilder().token(TOKEN).build()
     
-    start_handler = CommandHandler('start', start)
+    start_handler = CommandHandler(
+        'start', start,
+        filters.ChatType.PRIVATE
+    )
     application.add_handler(start_handler)
 
-    status_handler = CommandHandler('status', status.status)
+    status_handler = CommandHandler(
+        'status', status.status,
+        filters.User(SUPERUSERS)
+    )
     application.add_handler(status_handler)
 
     cmd_handler = CommandHandler(
