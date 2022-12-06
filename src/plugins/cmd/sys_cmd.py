@@ -14,7 +14,7 @@ def help() -> str:
     )
 
 
-def run(opt: str) -> str:
+def shell(opt: str) -> str:
 
     if not opt:
         return "发送 /cmd.help 获取帮助"

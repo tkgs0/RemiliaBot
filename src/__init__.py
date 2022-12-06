@@ -1,13 +1,6 @@
 import sys
 
-from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    ContextTypes,
-    CommandHandler,
-    MessageHandler,
-    filters
-)
+from telegram.ext import ApplicationBuilder
 
 from utils.log import (
     logging,
@@ -15,8 +8,7 @@ from utils.log import (
     LoguruHandler,
     default_format
 )
-
-from config import TOKEN, NICKNAME, SUPERUSERS
+from config import TOKEN
 
 
 logging.basicConfig(handlers=[LoguruHandler()], level=logging.INFO)
@@ -25,63 +17,26 @@ logger.remove()
 logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f'\033[36;1mEvent\033[0m [{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    await context.bot.send_message(
-        chat_id = update.message.chat_id,
-        text = (
-            f'Hello, This is {NICKNAME[0]}.\n'
-            f'Your Telegram ID is: {context._user_id}'
-    ))
-
-
 from .plugins import (
     chat,
-    chatGPT,
+    # chatGPT,
     cmd,
     setu,
+    start,
     status
 )
 
 class run():
-    application = ApplicationBuilder().token(TOKEN).build()
-    
-    start_handler = CommandHandler(
-        'start', start,
-        filters.ChatType.PRIVATE
-    )
-    application.add_handler(start_handler)
-
-    status_handler = CommandHandler(
-        'status', status.status,
-        filters.User(SUPERUSERS)
-    )
-    application.add_handler(status_handler)
-
-    cmd_handler = CommandHandler(
-        'cmd', cmd.cmd,
-        filters.TEXT & filters.User(SUPERUSERS)
-    )
-    application.add_handler(cmd_handler)
-
-    setu_handler = CommandHandler('setu', setu.setu)
-    application.add_handler(setu_handler)
-
-    chatGPT_handler = CommandHandler('chatGPT', chatGPT.chatGPT)
-    application.add_handler(chatGPT_handler)
+    app = ApplicationBuilder().token(TOKEN).build()
 
 
-    chat_handler = MessageHandler(
-        filters.ChatType.PRIVATE & filters.TEXT & (~filters.COMMAND),
-        chat.chat
-    )
-    application.add_handler(chat_handler)
+    start.run(app)
+    cmd.run(app)
+    # chatGPT.run(app)
+    setu.run(app)
+    status.run(app)
 
-    groupchat_handler = MessageHandler(
-        filters.ChatType.GROUPS & filters.TEXT & (~filters.COMMAND),
-        chat.groupchat
-    )
-    application.add_handler(groupchat_handler)
+    chat.run(app)
 
 
-    application.run_polling()
+    app.run_polling()

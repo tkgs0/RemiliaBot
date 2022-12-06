@@ -1,22 +1,44 @@
 import random
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import (
+    ContextTypes,
+    MessageHandler,
+    filters
+)
 
 from utils.log import logger
 from config import NICKNAME
-from .utils import get_reply, get_chat_result, hello__reply
+from .utils import (
+    get_reply,
+    get_chat_result,
+    hello__reply
+)
 from .looklike import Look
 
 
+def run(application):
+    chat_handler = MessageHandler(
+        filters.ChatType.PRIVATE & filters.TEXT & (~filters.COMMAND),
+        chat
+    )
+    application.add_handler(chat_handler)
+
+    groupchat_handler = MessageHandler(
+        filters.ChatType.GROUPS & filters.TEXT & (~filters.COMMAND),
+        groupchat
+    )
+    application.add_handler(groupchat_handler)
+
+
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f'\033[36;1mEvent\033[0m [{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     msg = update.message.text
     content = await reply(msg, NICKNAME[0])
     await update.message.chat.send_message(content)
 
 
 async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f'\033[36;1mEvent\033[0m [{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
+    logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     msg = update.message.text
     for i in NICKNAME:
         if msg.startswith(i):
@@ -24,8 +46,8 @@ async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             content = await reply(msg, NICKNAME[0])
             await update.message.chat.send_message(content)
 
-async def reply(msg: str, NICKNAME: str):
 
+async def reply(msg: str, NICKNAME: str):
     if (not msg) or msg.isspace() or msg in [
         "你好啊",
         "你好",

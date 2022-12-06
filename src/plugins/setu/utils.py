@@ -28,7 +28,7 @@ async def get_setu(tag=[], r18=0, pixproxy='') -> list:
             setu_tags = res.json()['data'][0]['tags']
             # p = res.json()['data'][0]['p']
             if pixproxy:
-                setu_url = setu_url.replace('i.pixiv.re', pixproxy)
+                setu_url = setu_url.replace('https://i.pixiv.re', pixproxy)
             pic = await down_pic(setu_url)
             data = (
                 f'标题: {setu_title}\npid: {setu_pid}\n画师: {setu_author}\n标签: {", ".join(setu_tags)}'
