@@ -22,7 +22,7 @@ def ask(user: int, msg: str):
         chatbot = Chatbot(CHATGPT, conversation_id=None)
 
     chatbot.refresh_session()
-    resp = chatbot.get_chat_response(msg)
+    resp = chatbot.get_chat_response(msg,output='text')
     user_chat.update({user: [chatbot, time.time()]})
 
     return resp['message']
