@@ -17,7 +17,7 @@ def shell(opt: str) -> str:
     if not opt:
         return '发送 /cmd -h 获取帮助'
 
-    if opt == ('--help' or '-h'):
+    if opt == '-h':
         return help()
 
     content = Popen(
