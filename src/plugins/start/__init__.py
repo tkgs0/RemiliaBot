@@ -19,7 +19,7 @@ def run(application):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    await update.message.chat.send_message(
+    await update.message.reply_text(
         f'Hello, This is {NICKNAME[0]}.\n'
         f'Your Telegram ID is: {context._user_id}'
     )

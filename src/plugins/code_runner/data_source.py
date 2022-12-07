@@ -42,7 +42,7 @@ class CodeRunner():
             "For example:\n"
             "/code python\n"
             "print('hello world')\n\n"
-            "发送 /code.list 查看支持的语言"
+            "发送 /code -ls 查看支持的语言"
         )
 
     @staticmethod
@@ -54,16 +54,11 @@ class CodeRunner():
     @staticmethod
     async def runner(msg: str):
         args = msg.split("\n")
-        if not args:
-            return "请检查输入内容..."
 
-        try:
-            _ = args[1]
-        except Exception:
-            return "请检查输入内容...发送 /code.help 查看帮助"
+        if not args or len(args) == 1:
+            return "请检查输入内容...发送 /code -h 查看帮助"
 
-        lang = args[0].replace("\r", "")
-        if lang not in SUPPORTED_LANGUAGES:
+        if (lang := args[0].strip()) not in SUPPORTED_LANGUAGES:
             return "该语言暂不支持...或者可能格式错误？"
 
         del args[0]
@@ -85,8 +80,8 @@ class CodeRunner():
 
         try:
             res = requests.post(url, json=js)
-        except Exception:
-            return "出错力，可能是API寄了..."
+        except Exception as e:
+            return repr(e)
 
         payload = res.json()
         sent = False

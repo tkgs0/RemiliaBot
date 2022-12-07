@@ -20,6 +20,9 @@ def run(application):
 
 async def cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    opt = update.message.text.replace('/cmd', '', 1)
+    opt = (
+        context.args[0] + update.message.text.split(context.args[0], 1)[1]
+        if context.args else ''
+    )
     content = shell(opt)
     await update.message.reply_text(content)
