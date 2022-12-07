@@ -22,6 +22,7 @@ from .plugins import (
     chatGPT,
     cmd,
     code_runner,
+    Gua64,
     setu,
     start,
     status
@@ -35,6 +36,7 @@ class run():
     cmd.run(app)
     status.run(app)
     code_runner.run(app)
+    Gua64.run(app)
     setu.run(app)
     chatGPT.run(app)
 
