@@ -19,7 +19,7 @@ SETU = {
 }
 
 def chatGPT_token():
-    # token获取方法参考 https://github.com/tkgs0/Telegram-Bot#chatgpt-token-%E8%8E%B7%E5%8F%96%E6%96%B9%E6%B3%95
+    # 参考 https://github.com/acheong08/ChatGPT/wiki/Setup
     return {
         'Authorization': '<API-KEY>',
         'session_token': ''
