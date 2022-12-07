@@ -17,7 +17,7 @@ async def chatGPT(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
     msg = (
         context.args[0] + update.message.text.split(context.args[0], 1)[1]
-        if context.args else ' '
+        if context.args else 'About you'
     )
     user = context._user_id
     content = ask(user, msg)

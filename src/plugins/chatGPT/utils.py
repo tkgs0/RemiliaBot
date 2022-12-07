@@ -23,7 +23,7 @@ def ask(user: int, msg: str):
 
     try:
         chatbot.refresh_session()
-        resp = chatbot.get_chat_response(msg,output='text')
+        resp = chatbot.get_chat_response(msg, output='text')
         user_chat.update({user: [chatbot, time.time()]})
         return resp['message']
     except Exception as e:
