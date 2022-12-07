@@ -21,7 +21,7 @@ def run(application):
 
 async def code_runner(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    opt = unescape(
+    opt = (
         context.args[0] + update.message.text.split(context.args[0], 1)[1]
         if context.args else ''
     )
@@ -32,6 +32,6 @@ async def code_runner(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif opt == '-ls':
         content = CodeRunner().list_supp_lang()
     else:
-        content = str(await CodeRunner().runner(opt))
+        content = str(await CodeRunner().runner(unescape(opt)))
     await update.message.reply_text(content)
 
