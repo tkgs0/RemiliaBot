@@ -11,13 +11,13 @@ from .Gua64 import encode, decode
 
 def run(application):
     en64Gua_handler = CommandHandler(
-        'en64gua', en64Gua,
+        'en64', en64Gua,
         filters.TEXT
     )
     application.add_handler(en64Gua_handler)
 
     de64Gua_handler = CommandHandler(
-        'de64gua', de64Gua,
+        'de64', de64Gua,
         filters.TEXT
     )
     application.add_handler(de64Gua_handler)
