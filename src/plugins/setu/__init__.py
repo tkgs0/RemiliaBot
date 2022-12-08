@@ -6,7 +6,7 @@ from telegram.ext import (
 
 from utils.log import logger
 from config import SETU
-from .rdsetu import get_setu
+from .utils import get_setu
 
 
 def run(application):

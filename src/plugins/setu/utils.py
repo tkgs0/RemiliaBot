@@ -2,17 +2,20 @@ from sys import exc_info
 import httpx
 from httpx import AsyncClient
 
+from telegram import InputMediaPhoto
+
 from utils.log import logger
 
 
-async def get_setu(tag=[], r18=0, pixproxy='') -> list:
+async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
     logger.info('loading...')
     async with AsyncClient() as client:
         req_url = 'https://api.lolicon.app/setu/v2'
         params = {
             'tag': tag,
             'r18': r18,
-            'size': 'regular'
+            'size': 'regular',
+            'num': num if num < 11 else 10
         }
         try:
             res = await client.get(req_url, params=params, timeout=120)
@@ -21,20 +24,34 @@ async def get_setu(tag=[], r18=0, pixproxy='') -> list:
             logger.warning(e)
             return [f'API异常{e}', False]
         try:
-            setu_title = res.json()['data'][0]['title']
-            setu_url = res.json()['data'][0]['urls']['regular']
-            setu_pid = res.json()['data'][0]['pid']
-            setu_author = res.json()['data'][0]['author']
-            setu_tags = res.json()['data'][0]['tags']
-            # p = res.json()['data'][0]['p']
-            if pixproxy:
-                setu_url = setu_url.replace('https://i.pixiv.re', pixproxy)
-            pic = await down_pic(setu_url)
-            data = (
-                f'标题: {setu_title}\npid: {setu_pid}\n画师: {setu_author}\n标签: {", ".join(setu_tags)}'
-                if type(pic) != int else ''
-            )
-            return [pic, data]
+            content = res.json()['data']
+            _ = content[0]
+
+            content = [{
+                'pid': i['pid'],
+                'url': i['urls']['regular'].replace('https://i.pixiv.re', pixproxy) if pixproxy else i['urls']['regular'],
+                'caption': (
+                    f'标题: {i["title"]}\n'
+                    f'pid: {i["pid"]}\n'
+                    f'画师: {i["author"]}\n'
+                    f'标签: {", ".join(i["tags"])}'
+                )
+            } for i in content]
+
+            pics, status = await down_pic(content)
+
+            if not pics:
+                return ['\n'.join(status), False]
+            if len(pics) == 1:
+                return [pics[0], 1, 
+                    '\n'.join(status) if status else '']
+
+            media = [
+                InputMediaPhoto(media=i[0], caption=i[1])
+                for i in pics
+            ]
+            return [media, 2, '\n'.join(status) if status else '']
+
         except httpx.ProxyError as e:
             logger.warning(e)
             return [f'代理错误: {e}', False]
@@ -46,17 +63,19 @@ async def get_setu(tag=[], r18=0, pixproxy='') -> list:
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
 
 
-async def down_pic(url):
+async def down_pic(content):
     async with AsyncClient() as client:
         headers = {
             'Referer': '',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; en-US) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 YaBrowser/23.7.7.77.77 SA/3 Safari/537.36'
         }
-        re = await client.get(url=url, headers=headers, timeout=120)
-        if re.status_code == 200:
-            logger.success('成功获取图片')
-            return re.content
-        else:
-            logger.error(f'获取图片失败: {re.status_code}')
-            return re.status_code
-
+        pics, status = list(), list()
+        for i in content:
+            re = await client.get(url=i['url'], headers=headers, timeout=120)
+            if re.status_code == 200:
+                logger.success(f'pid {i["pid"]} 获取图片成功')
+                pics.append([re.content, i['caption']])
+            else:
+                logger.error(sc := f'pid {i["pid"]} 获取图片失败: {re.status_code}')
+                status.append(sc)
+        return pics, status
