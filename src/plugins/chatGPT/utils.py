@@ -26,7 +26,7 @@ def save_chat() -> None:
     file_path.write_text(json.dumps(user_chat), encoding='utf-8')
 
 
-async def ask(user: int, msg: str):
+async def ask(user: str, msg: str):
     try:
         recmd = ['重置会话', '重設對談']
         if user in user_chat:
