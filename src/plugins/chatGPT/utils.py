@@ -62,4 +62,4 @@ async def ask(user: int, msg: str):
         return resp['message']
 
     except Exception as e:
-        return str(e)
+        return repr(e)
