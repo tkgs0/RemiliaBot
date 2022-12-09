@@ -20,6 +20,6 @@ async def chatGPT(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if context.args else 'About you'
     )
     user = context._user_id
-    content = ask(user, msg)
+    content = await ask(user, msg)
     await update.message.reply_text(content)
 
