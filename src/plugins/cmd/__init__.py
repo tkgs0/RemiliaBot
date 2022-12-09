@@ -6,7 +6,7 @@ from telegram.ext import (
 )
 
 from utils.log import logger
-from config import SUPERUSERS
+from src.config import SUPERUSERS
 from .sys_cmd import shell
 
 

@@ -1,6 +1,6 @@
 from revChatGPT.revChatGPT import Chatbot
 import time
-from config import chatGPT_token
+from src.config import chatGPT_token
 
 
 CHATGPT = chatGPT_token()

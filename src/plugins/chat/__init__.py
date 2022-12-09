@@ -7,7 +7,7 @@ from telegram.ext import (
 )
 
 from utils.log import logger
-from config import NICKNAME
+from src.config import NICKNAME
 from .utils import (
     get_reply,
     get_chat_result,

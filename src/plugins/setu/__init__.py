@@ -5,7 +5,7 @@ from telegram.ext import (
 )
 
 from utils.log import logger
-from config import SETU
+from src.config import SETU
 from .utils import get_setu
 
 

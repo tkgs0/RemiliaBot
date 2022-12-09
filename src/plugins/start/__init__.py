@@ -6,7 +6,7 @@ from telegram.ext import (
 )
 
 from utils.log import logger
-from config import NICKNAME
+from src.config import NICKNAME
 
 
 def run(application):
