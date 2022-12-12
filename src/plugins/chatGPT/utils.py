@@ -31,11 +31,6 @@ async def ask(user: str, msg: str):
         recmd = ['重置会话', '重設對談']
         if user in user_chat:
             start_time = user_chat[user]['time']
-            chatbot = Chatbot(
-                CHATGPT,
-                conversation_id=user_chat[user]['cid'],
-                parent_id=user_chat[user]['pid']
-            )
             if msg in recmd:
                 if time.time() > start_time + 60 * 5:
                     user_chat.pop(user)
@@ -43,6 +38,11 @@ async def ask(user: str, msg: str):
                     return '会话已重置'
                 else:
                     return '重置选项冷却中...'
+            chatbot = Chatbot(
+                CHATGPT,
+                conversation_id=user_chat[user]['cid'],
+                parent_id=user_chat[user]['pid']
+            )
         else:
             if msg in recmd:
                 return '会话不存在'
