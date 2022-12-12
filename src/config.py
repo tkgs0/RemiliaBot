@@ -24,13 +24,10 @@ SETU:
 
 CHATGPT: 
   # 参考 https://github.com/acheong08/ChatGPT/wiki/Setup
-  # 以下三项填其中一项即可 (email和password两个算一项)
-  email: ''
-  password: ''
-  Authorization: ''
   session_token: ''
-  accept_language: 'en-US,en'
+  cf_clearance: ''
   user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15'
+  proxy: ''
 
 """.strip()
 
