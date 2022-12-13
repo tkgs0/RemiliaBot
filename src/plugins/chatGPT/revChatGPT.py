@@ -107,7 +107,7 @@ class AsyncChatbot:
             "Accept-Language": self.config["accept_language"]+";q=0.9",
             "Referer": "https://chat.openai.com/chat",
         }
-        self.refresh_session()
+        asyncio.get_event_loop().run_until_complete(self.refresh_session())
 
     def reset_chat(self) -> None:
         """
@@ -234,7 +234,7 @@ class AsyncChatbot:
         :return: The chat response `{"message": "Returned messages", "conversation_id": "conversation ID", "parent_id": "parent ID"}` or None
         :rtype: :obj:`dict` or :obj:`None`
         """
-        self.refresh_session()
+        await self.refresh_session()
         data = {
             "action": "next",
             "messages": [
@@ -272,7 +272,7 @@ class AsyncChatbot:
             self.conversation_id = self.conversation_id_prev_queue.pop()
             self.parent_id = self.parent_id_prev_queue.pop()
 
-    def refresh_session(self) -> None:
+    async def refresh_session(self) -> None:
         """
         Refresh the session.
 
@@ -280,7 +280,7 @@ class AsyncChatbot:
         """
         # Either session_token, email and password or Authorization is required
         if not self.config.get("cf_clearance") or not self.config.get("session_token"):
-            asyncio.get_event_loop().run_until_complete(self.get_cf_cookies())
+            await self.get_cf_cookies()
         if self.config.get("session_token") and self.config.get("cf_clearance"):
             s = httpx.Client()
             if self.config.get("proxy"):
@@ -308,8 +308,8 @@ class AsyncChatbot:
             # Check the response code
             if response.status_code != 200:
                 if response.status_code == 403:
-                    asyncio.get_event_loop().run_until_complete(self.get_cf_cookies())
-                    self.refresh_session()
+                    await self.get_cf_cookies()
+                    await self.refresh_session()
                     return
                 else:
                     self.debugger.log(
