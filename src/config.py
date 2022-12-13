@@ -26,8 +26,8 @@ CHATGPT:
   # 参考 https://github.com/acheong08/ChatGPT/wiki/Setup
   session_token: ''
   cf_clearance: ''
-  user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15'
   proxy: ''
+  accept_language: 'en-US,en'
 
 """.strip()
 
