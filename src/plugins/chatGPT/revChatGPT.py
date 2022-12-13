@@ -280,7 +280,7 @@ class AsyncChatbot:
         """
         # Either session_token, email and password or Authorization is required
         if not self.config.get("cf_clearance") or not self.config.get("session_token"):
-            asyncio.run(self.get_cf_cookies())
+            asyncio.get_event_loop().run_until_complete(self.get_cf_cookies())
         if self.config.get("session_token") and self.config.get("cf_clearance"):
             s = httpx.Client()
             if self.config.get("proxy"):
@@ -308,7 +308,7 @@ class AsyncChatbot:
             # Check the response code
             if response.status_code != 200:
                 if response.status_code == 403:
-                    asyncio.run(self.get_cf_cookies())
+                    asyncio.get_event_loop().run_until_complete(self.get_cf_cookies())
                     self.refresh_session()
                     return
                 else:
@@ -430,125 +430,3 @@ class AsyncChatbot:
 
         return response
 
-
-class Chatbot(AsyncChatbot):
-    """
-    Initialize the Chatbot.
-
-    See wiki for the configuration json:
-    https://github.com/acheong08/ChatGPT/wiki/Setup
-
-    :param config: The configuration json
-    :type config: :obj:`json`
-
-    :param conversation_id: The conversation ID
-    :type conversation_id: :obj:`str`, optional
-
-    :param parent_id: The parent ID
-    :type parent_id: :obj:`str`, optional
-
-    :param debug: Whether to enable debug mode
-    :type debug: :obj:`bool`, optional
-
-    :param refresh: Whether to refresh the session
-    :type refresh: :obj:`bool`, optional
-
-    :param request_timeout: The network request timeout seconds
-    :type request_timeout: :obj:`int`, optional
-
-    :param base_url: The base url to chat.openai.com backend server,
-        useful when set up a reverse proxy to avoid network issue.
-    :type base_url: :obj:`str`, optional
-
-    :return: The Chatbot object
-    :rtype: :obj:`Chatbot`
-    """
-
-    def __get_chat_stream(self, data) -> None:
-        """
-        Generator for the chat stream -- Internal use only
-
-        :param data: The data to send
-        :type data: :obj:`dict`
-
-        :return: None
-        """
-        s = httpx.Client()
-        # Set cloudflare cookies
-        if "cf_clearance" in self.config:
-            s.cookies.set(
-                "cf_clearance",
-                self.config["cf_clearance"],
-            )
-        with s.stream(
-            'POST',
-            self.base_url + "backend-api/conversation",
-            headers=self.headers,
-            data=json.dumps(data),
-            timeout=self.request_timeout,
-        ) as response:
-            for line in response.iter_lines():
-                try:
-                    line = line[:-1]
-                    if line == "" or line == "data: [DONE]":
-                        continue
-                    line = line[6:]
-                    line = json.loads(line)
-                    if len(line["message"]["content"]["parts"]) == 0:
-                        continue
-                    message = line["message"]["content"]["parts"][0]
-                    self.conversation_id = line["conversation_id"]
-                    self.parent_id = line["message"]["id"]
-                    yield {
-                        "message": message,
-                        "conversation_id": self.conversation_id,
-                        "parent_id": self.parent_id,
-                    }
-                except Exception as exc:
-                    self.debugger.log(
-                        f"Error when handling response, got values{line}")
-                    raise Exception(
-                        f"Error when handling response, got values{line}") from exc
-
-    def get_chat_response(self, prompt: str, output="text", conversation_id=None, parent_id=None) -> dict or None:
-        """
-        Get the chat response.
-
-        :param prompt: The message sent to the chatbot
-        :type prompt: :obj:`str`
-
-        :param output: The output type `text` or `stream`
-        :type output: :obj:`str`, optional
-
-        :return: The chat response `{"message": "Returned messages", "conversation_id": "conversation ID", "parent_id": "parent ID"}` or None
-        :rtype: :obj:`dict` or :obj:`None`
-        """
-        self.refresh_session()
-        if output == "text":
-            coroutine_object = super().get_chat_response(
-                prompt, output, conversation_id, parent_id)
-            try:
-                return asyncio.run(coroutine_object)
-            except RuntimeError:
-                import nest_asyncio
-                nest_asyncio.apply()
-                return asyncio.run(coroutine_object)
-
-        if output == "stream":
-            data = {
-                "action": "next",
-                "messages": [
-                    {
-                        "id": str(generate_uuid()),
-                        "role": "user",
-                        "content": {"content_type": "text", "parts": [prompt]},
-                    },
-                ],
-                "conversation_id": conversation_id or self.conversation_id,
-                "parent_message_id": parent_id or self.parent_id,
-                "model": "text-davinci-002-render",
-            }
-            self.conversation_id_prev_queue.append(
-                data["conversation_id"])  # for rollback
-            self.parent_id_prev_queue.append(data["parent_message_id"])
-            return self.__get_chat_stream(data)
