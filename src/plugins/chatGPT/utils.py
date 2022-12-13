@@ -48,7 +48,7 @@ async def ask(user: str, msg: str):
                 return '会话不存在'
             chatbot = Chatbot(CHATGPT)
 
-        # chatbot.refresh_session()
+        await chatbot.refresh_session()
         resp = await chatbot.get_chat_response(msg, output='text')
         user_chat.update({
             user: {
