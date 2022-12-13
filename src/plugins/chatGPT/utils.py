@@ -4,7 +4,7 @@ try:
 except ModuleNotFoundError:
     import json
 
-from revChatGPT.revChatGPT import AsyncChatbot as Chatbot
+from .revChatGPT import AsyncChatbot as Chatbot
 import time
 from src.config import chatGPT_token
 
@@ -49,7 +49,7 @@ async def ask(user: str, msg: str):
             chatbot = Chatbot(CHATGPT)
 
         # chatbot.refresh_session()
-        resp = await chatbot.get_chat_response(msg)
+        resp = await chatbot.get_chat_response(msg, output='text')
         user_chat.update({
             user: {
                 'cid': chatbot.conversation_id,
