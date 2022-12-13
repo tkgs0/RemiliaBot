@@ -5,4 +5,5 @@ APScheduler
 psutil
 asyncio
 httpx
-revChatGPT
+playwright
+cf_clearance2
