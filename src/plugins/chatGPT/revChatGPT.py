@@ -62,7 +62,7 @@ class AsyncChatbot:
             else "en-US,en")
         self.config["user_agent"] = (self.config.get("user_agent")
             if self.config.get("user_agent")
-            else "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0")
+            else "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0")
         self.headers = {
             "Accept": "text/event-stream",
             "Authorization": "Bearer ",
@@ -211,7 +211,7 @@ class AsyncChatbot:
                 )
                 # s.cookies.set(
                 #     "__Secure-next-auth.csrf-token",
-                #     self.config["csrf_token"]
+                #     self.config["csrf_token"],
                 # )
                 response = await s.get(
                     self.base_url + "api/auth/session",
@@ -270,7 +270,7 @@ class AsyncChatbot:
         """
         async with async_playwright() as p:
             browser = await p.firefox.launch(headless=True)
-            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:{browser.version}) Gecko/20100101 Firefox/{browser.version}"
+            ua = f"Mozilla/5.0 (X11; Linux x86_64; rv:{browser.version}) Gecko/20100101 Firefox/{browser.version}"
             content = await browser.new_context(user_agent=ua)
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
