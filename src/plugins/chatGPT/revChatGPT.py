@@ -82,7 +82,7 @@ class AsyncChatbot:
     request_timeout: int
     captcha_solver: bool | None
 
-    async def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100, captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
+    def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100, captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
         self.debugger = Debugger(debug)
         self.debug = debug
         self.config = config
@@ -108,7 +108,6 @@ class AsyncChatbot:
             "Accept-Language": self.config["accept_language"]+";q=0.9",
             "Referer": "https://chat.openai.com/chat",
         }
-        await self.refresh_session()
 
     def reset_chat(self) -> None:
         """
