@@ -4,7 +4,6 @@ import asyncio
 import httpx
 from typing import List
 from playwright.async_api import async_playwright
-
 from utils.log import logger
 
 
@@ -45,7 +44,7 @@ class AsyncChatbot:
             else "en-US,en")
         self.config["user_agent"] = (self.config["user_agent"]
             if self.config.get("user_agent")
-            else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
+            else "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0")
         self.headers = {
             "Accept": "text/event-stream",
             "Authorization": "Bearer ",
@@ -252,7 +251,7 @@ class AsyncChatbot:
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.firefox.launch(headless=True)
             content = await browser.new_context(user_agent=self.config['user_agent'])
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
