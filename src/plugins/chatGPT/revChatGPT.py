@@ -25,6 +25,7 @@ def generate_uuid() -> str:
     uid = str(uuid.uuid4())
     return uid
 
+
 class Debugger:
     def __init__(self, debug: bool = False):
         if debug:
@@ -72,17 +73,16 @@ class AsyncChatbot:
     :rtype: :obj:`Chatbot`
     """
     config: dict
-    conversation_id: str|None
+    conversation_id: str | None
     parent_id: str
     base_url: str
     headers: dict
     conversation_id_prev_queue: List
     parent_id_prev_queue: List
     request_timeout: int
-    captcha_solver: bool|None
+    captcha_solver: bool | None
 
-    def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100,
-                 captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
+    async def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100, captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
         self.debugger = Debugger(debug)
         self.debug = debug
         self.config = config
@@ -108,6 +108,7 @@ class AsyncChatbot:
             "Accept-Language": self.config["accept_language"]+";q=0.9",
             "Referer": "https://chat.openai.com/chat",
         }
+        await self.refresh_session()
 
     def reset_chat(self) -> None:
         """
@@ -130,7 +131,7 @@ class AsyncChatbot:
             self.config["Authorization"]
         self.headers["User-Agent"] = self.config["user_agent"]
 
-    async def __get_chat_text(self, data) -> dict|None:
+    async def __get_chat_text(self, data) -> dict | None:
         """
         Get the chat response as text -- Internal use only
         :param data: The data to send
@@ -149,7 +150,7 @@ class AsyncChatbot:
                     self.config["cf_clearance"],
                 )
             # Set proxies
-            if self.config.get("proxy"):
+            if self.config.get("proxy", "") != "":
                 s.proxies = {
                     "http": self.config["proxy"],
                     "https": self.config["proxy"],
@@ -228,15 +229,17 @@ class AsyncChatbot:
             self.conversation_id = self.conversation_id_prev_queue.pop()
             self.parent_id = self.parent_id_prev_queue.pop()
 
-    async def refresh_session(self) -> None:
+    async def refresh_session(self, running_in_async=False) -> None:
         """
         Refresh the session.
 
         :return: None
         """
+        if running_in_async:
+            nest_asyncio.apply()
         # Either session_token, email and password or Authorization is required
         if not self.config.get("cf_clearance") or not self.config.get("session_token"):
-            await self.get_cf_cookies()
+            await self.__get_cf_cookies()
         if self.config.get("session_token") and self.config.get("cf_clearance"):
             s = httpx.Client()
             if self.config.get("proxy"):
@@ -264,7 +267,7 @@ class AsyncChatbot:
             # Check the response code
             if response.status_code != 200:
                 if response.status_code == 403:
-                    await self.get_cf_cookies()
+                    await self.__get_cf_cookies()
                     await self.refresh_session()
                     return
                 else:
@@ -304,14 +307,14 @@ class AsyncChatbot:
             raise ValueError(
                 "No session_token, email and password or Authorization provided")
 
-    async def get_cf_cookies(self) -> None:
+    async def __get_cf_cookies(self) -> None:
         """
         Get cloudflare cookies.
 
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             page = await browser.new_page()
             if 'session_token' in self.config:
                 await async_stealth(page, pure=False)
@@ -385,4 +388,5 @@ class AsyncChatbot:
         )
 
         return response
+
 
