@@ -28,6 +28,8 @@ def save_chat() -> None:
 
 async def ask(user: str, msg: str):
     try:
+        chatbot = Chatbot(CHATGPT)
+        
         recmd = ['重置会话', '重設對談']
         if user in user_chat:
             start_time = user_chat[user]['time']
@@ -38,18 +40,18 @@ async def ask(user: str, msg: str):
                     return '会话已重置'
                 else:
                     return '重置选项冷却中...'
-            chatbot = Chatbot(
-                CHATGPT,
+            await chatbot.refresh_session()
+            resp = await chatbot.get_chat_response(
+                msg,
                 conversation_id=user_chat[user]['cid'],
                 parent_id=user_chat[user]['pid']
             )
         else:
             if msg in recmd:
                 return '会话不存在'
-            chatbot = Chatbot(CHATGPT)
+            await chatbot.refresh_session()
+            resp = await chatbot.get_chat_response(msg)
 
-        await chatbot.refresh_session()
-        resp = await chatbot.get_chat_response(msg, output='text')
         user_chat.update({
             user: {
                 'cid': chatbot.conversation_id,
@@ -59,7 +61,7 @@ async def ask(user: str, msg: str):
         })
         save_chat()
         
-        return resp['message']
+        return resp['message'] if resp else '发生了一个错误, 返回值为空'
 
     except Exception as e:
         return repr(e)

@@ -135,7 +135,7 @@ class AsyncChatbot:
             else:
                 return None
 
-    async def get_chat_response(self, prompt: str, output="text", conversation_id=None, parent_id=None) -> dict | None:
+    async def get_chat_response(self, prompt: str, conversation_id=None, parent_id=None) -> dict | None:
         """
         Get the chat response.
 
@@ -169,10 +169,7 @@ class AsyncChatbot:
             self.conversation_id_prev_queue.pop(0)
         while len(self.parent_id_prev_queue) > self.max_rollbacks:
             self.parent_id_prev_queue.pop(0)
-        if output == "text":
-            return await self.__get_chat_text(data)
-        else:
-            raise ValueError("Output must be either 'text' or 'stream'")
+        return await self.__get_chat_text(data)
 
     def rollback_conversation(self, num=1) -> None:
         """
