@@ -25,10 +25,8 @@ SETU:
 CHATGPT: 
   # 参考 https://github.com/acheong08/ChatGPT/wiki/Setup
   session_token: ''
-  cf_clearance: ''
   proxy: ''
   accept_language: 'en-US,en'
-  user_agent: ''
 
 """.strip()
 
