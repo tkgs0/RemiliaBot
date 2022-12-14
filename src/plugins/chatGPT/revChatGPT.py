@@ -311,7 +311,7 @@ class AsyncChatbot:
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=False)
+            browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
             if 'session_token' in self.config:
                 await async_stealth(page, pure=False)
