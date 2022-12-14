@@ -1,12 +1,11 @@
 import json
 import uuid
 import asyncio
-
 import httpx
-
 from typing import List
-
 from playwright.async_api import async_playwright
+
+from utils.log import logger
 
 
 def generate_uuid() -> str:
@@ -20,20 +19,6 @@ def generate_uuid() -> str:
     return uid
 
 
-class Debugger:
-    def __init__(self, debug: bool = False):
-        if debug:
-            print("Debugger enabled on OpenAIAuth")
-        self.debug = debug
-
-    def set_debug(self, debug: bool):
-        self.debug = debug
-
-    def log(self, message: str, end: str = "\n"):
-        if self.debug:
-            print(message, end=end)
-
-
 class AsyncChatbot:
     config: dict
     conversation_id: str | None
@@ -45,9 +30,7 @@ class AsyncChatbot:
     request_timeout: int
     captcha_solver: bool | None
 
-    def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100, captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
-        self.debugger = Debugger(debug)
-        self.debug = debug
+    def __init__(self, config, conversation_id=None, parent_id=None, request_timeout=100, captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
         self.config = config
         self.conversation_id = conversation_id
         self.parent_id = parent_id if parent_id else generate_uuid()
@@ -62,7 +45,7 @@ class AsyncChatbot:
             else "en-US,en")
         self.config["user_agent"] = (self.config.get("user_agent")
             if self.config.get("user_agent")
-            else "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0")
+            else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
         self.headers = {
             "Accept": "text/event-stream",
             "Authorization": "Bearer ",
@@ -123,7 +106,7 @@ class AsyncChatbot:
                 response = response.text.splitlines()[-4]
                 response = response[6:]
             except Exception as exc:
-                self.debugger.log("Incorrect response from OpenAI API")
+                logger.error("Incorrect response from OpenAI API")
                 raise Exception("Incorrect response from OpenAI API") from exc
             # Check if it is JSON
             if response.startswith("{"):
@@ -226,14 +209,14 @@ class AsyncChatbot:
                     await self.refresh_session()
                     return
                 else:
-                    self.debugger.log(
+                    logger.error(
                         f"Invalid status code: {response.status_code}")
                     raise Exception("Wrong response code")
             # Try to get new session token and Authorization
             try:
                 if "error" in response.json():
-                    self.debugger.log("Error in response JSON")
-                    self.debugger.log(response.json()["error"])
+                    logger.error("Error in response JSON")
+                    logger.error(response.json()["error"])
                     raise Exception
                 self.config["session_token"] = response.cookies.get(
                     "__Secure-next-auth.session-token",
@@ -244,8 +227,8 @@ class AsyncChatbot:
             except Exception as exc:
                 # Check if response JSON is empty
                 if response.json() == {}:
-                    self.debugger.log("Empty response")
-                    self.debugger.log("Probably invalid session token")
+                    logger.error("Empty response")
+                    logger.error("Probably invalid session token")
                 # Check if ["detail"]["code"] == "token_expired" in response JSON
                 # First check if detail is in response JSON
                 elif "detail" in response.json():
@@ -253,11 +236,11 @@ class AsyncChatbot:
                     if "code" in response.json()["detail"]:
                         # Check if code is token_expired
                         if response.json()["detail"]["code"] == "token_expired":
-                            self.debugger.log("Token expired")
+                            logger.error("Token expired")
                 raise Exception("Failed to refresh session") from exc
             return
         else:
-            self.debugger.log(
+            logger.error(
                 "No session_token, email and password or Authorization provided")
             raise ValueError(
                 "No session_token, email and password or Authorization provided")
@@ -269,8 +252,8 @@ class AsyncChatbot:
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.firefox.launch(headless=True)
-            ua = f"Mozilla/5.0 (X11; Linux x86_64; rv:{browser.version}) Gecko/20100101 Firefox/{browser.version}"
+            browser = await p.chromium.launch(headless=True)
+            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{browser.version} Safari/537.36"
             content = await browser.new_context(user_agent=ua)
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
@@ -338,5 +321,4 @@ class AsyncChatbot:
         )
 
         return response
-
 
