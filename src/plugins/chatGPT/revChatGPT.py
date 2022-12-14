@@ -162,8 +162,8 @@ class AsyncChatbot:
                     "content": {"content_type": "text", "parts": [prompt]},
                 },
             ],
-            "conversation_id": conversation_id or self.conversation_id,
-            "parent_message_id": parent_id or self.parent_id,
+            "conversation_id": conversation_id,
+            "parent_message_id": parent_id,
             "model": "text-davinci-002-render",
         }
         self.conversation_id_prev_queue.append(

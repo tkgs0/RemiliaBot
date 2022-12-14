@@ -10,6 +10,7 @@ from src.config import chatGPT_token
 
 
 CHATGPT = chatGPT_token()
+chatbot = Chatbot(CHATGPT)
 
 
 file_path = Path() / 'data' / 'chatGPT' / 'user_chat.json'
@@ -28,7 +29,6 @@ def save_chat() -> None:
 
 async def ask(user: str, msg: str):
     try:
-        chatbot = Chatbot(CHATGPT)
         
         recmd = ['重置会话', '重設對談']
         if user in user_chat:
@@ -40,7 +40,6 @@ async def ask(user: str, msg: str):
                     return '会话已重置'
                 else:
                     return '重置选项冷却中...'
-            await chatbot.refresh_session()
             resp = await chatbot.get_chat_response(
                 msg,
                 conversation_id=user_chat[user]['cid'],
@@ -49,7 +48,6 @@ async def ask(user: str, msg: str):
         else:
             if msg in recmd:
                 return '会话不存在'
-            await chatbot.refresh_session()
             resp = await chatbot.get_chat_response(msg)
 
         user_chat.update({
