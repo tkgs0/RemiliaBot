@@ -1,18 +1,12 @@
-# Author: @acheong08@fosstodon.org
-# License: MIT
-# Description: A Python wrapper for OpenAI's chatbot API
 import json
 import uuid
 import asyncio
 
 import httpx
 
-import nest_asyncio
-
 from typing import List
 
 from playwright.async_api import async_playwright
-from cf_clearance2 import async_cf_retry, async_stealth
 
 
 def generate_uuid() -> str:
@@ -41,37 +35,6 @@ class Debugger:
 
 
 class AsyncChatbot:
-    """
-    Initialize the AsyncChatbot.
-
-    See wiki for the configuration json:
-    https://github.com/acheong08/ChatGPT/wiki/Setup
-
-    :param config: The configuration json
-    :type config: :obj:`json`
-
-    :param conversation_id: The conversation ID
-    :type conversation_id: :obj:`str`, optional
-
-    :param parent_id: The parent ID
-    :type parent_id: :obj:`str`, optional
-
-    :param debug: Whether to enable debug mode
-    :type debug: :obj:`bool`, optional
-
-    :param refresh: Whether to refresh the session
-    :type refresh: :obj:`bool`, optional
-
-    :param request_timeout: The network request timeout seconds
-    :type request_timeout: :obj:`int`, optional
-
-    :param base_url: The base url to chat.openai.com backend server,
-        useful when set up a reverse proxy to avoid network issue.
-    :type base_url: :obj:`str`, optional
-
-    :return: The Chatbot object
-    :rtype: :obj:`Chatbot`
-    """
     config: dict
     conversation_id: str | None
     parent_id: str
@@ -96,8 +59,6 @@ class AsyncChatbot:
         self.parent_id_prev_queue = []
         self.config["accept_language"] = 'en-US,en' if "accept_language" not in self.config.keys(
         ) else self.config["accept_language"]
-        self.config["user_agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" if "user_agent" not in self.config.keys(
-        ) else self.config["user_agent"]
         self.headers = {
             "Accept": "text/event-stream",
             "Authorization": "Bearer ",
@@ -139,7 +100,8 @@ class AsyncChatbot:
         :rtype: :obj:`dict`
         """
         # Create request session
-        async with httpx.AsyncClient() as s:
+        proxies = self.config["proxy"] if self.config.get("proxy") else None
+        async with httpx.AsyncClient(proxies=proxies) as s:
             # set headers
             s.headers = self.headers
             # Set cloudflare cookies
@@ -148,12 +110,6 @@ class AsyncChatbot:
                     "cf_clearance",
                     self.config["cf_clearance"],
                 )
-            # Set proxies
-            if self.config.get("proxy"):
-                s.proxies = {
-                    "http": self.config["proxy"],
-                    "https": self.config["proxy"],
-                }
             response = await s.post(
                 self.base_url + "backend-api/conversation",
                 data=data,
@@ -224,7 +180,7 @@ class AsyncChatbot:
         :param num: The number of messages to rollback
         :return: None
         """
-        for i in range(num):
+        for _ in range(num):
             self.conversation_id = self.conversation_id_prev_queue.pop()
             self.parent_id = self.parent_id_prev_queue.pop()
 
@@ -234,33 +190,34 @@ class AsyncChatbot:
 
         :return: None
         """
-        # Either session_token, email and password or Authorization is required
-        if not self.config.get("cf_clearance") or not self.config.get("session_token"):
+        if self.config.get("session_token"):
             await self.__get_cf_cookies()
-        if self.config.get("session_token") and self.config.get("cf_clearance"):
-            s = httpx.Client()
-            if self.config.get("proxy"):
-                s.proxies = {
-                    "http": self.config["proxy"],
-                    "https": self.config["proxy"],
-                }
-            # Set cookies
-            s.cookies.set(
-                "__Secure-next-auth.session-token",
-                self.config["session_token"],
-            )
+            proxies = self.config["proxy"] if self.config.get("proxy") else None
+            async with httpx.AsyncClient(proxies=proxies) as s:
+                # Set cookies
+                s.cookies.set(
+                    "__Secure-next-auth.callback-url",
+                    "https%3A%2F%2Fchat.openai.com%2Fchat"
+                )
+                s.cookies.set(
+                    "__Secure-next-auth.session-token",
+                    self.config["session_token"],
+                )
 
-            s.cookies.set(
-                "cf_clearance",
-                self.config["cf_clearance"],
-            )
-            # s.cookies.set("__Secure-next-auth.csrf-token", self.config['csrf_token'])
-            response = s.get(
-                self.base_url + "api/auth/session",
-                headers={
-                    "User-Agent": self.config["user_agent"],
-                },
-            )
+                s.cookies.set(
+                    "cf_clearance",
+                    self.config["cf_clearance"],
+                )
+                # s.cookies.set(
+                #     "__Secure-next-auth.csrf-token",
+                #     self.config['csrf_token']
+                # )
+                response = await s.get(
+                    self.base_url + "api/auth/session",
+                    headers={
+                        "User-Agent": self.config["user_agent"],
+                    },
+                )
             # Check the response code
             if response.status_code != 200:
                 if response.status_code == 403:
@@ -311,34 +268,29 @@ class AsyncChatbot:
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            if 'session_token' in self.config:
-                await async_stealth(page, pure=False)
-            else:
-                await async_stealth(page, pure=False)
+            browser = await p.firefox.launch(headless=True)
+            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/{browser.version}"
+            content = await browser.new_context(user_agent=ua)
+            page = await content.new_page()
+            await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
             await page.goto('https://chat.openai.com/')
-            page_wait_for_url = 'https://chat.openai.com/chat' if self.config.get('session_token') else ''
-            res = await async_cf_retry(
-                page, wait_for_url=page_wait_for_url)
-            cf_clearance_value = None
-            if res:
-                cookies = await page.context.cookies()
-                for cookie in cookies:
-                    if cookie.get('name') == 'cf_clearance':
-                        cf_clearance_value = cookie.get('value')
-                        self.debugger.log(str(cf_clearance_value))
-                    elif cookie.get('name') == '__Secure-next-auth.session-token':
-                        self.config['session_token'] = cookie.get('value')
-                ua = await page.evaluate('() => {return navigator.userAgent}')
-                self.debugger.log(ua)
+            cf_clearance = None
+            for _ in range(6):
+                if cf_clearance:
+                    break
+                await asyncio.sleep(5)
+                cookies = await content.cookies()
+                for i in cookies:
+                    if i["name"] == "cf_clearance":
+                        cf_clearance = i
+                        break
             else:
-                self.debugger.log("cf challenge fail")
                 raise Exception("cf challenge fail")
-            await browser.close()
-            del browser
-            self.config['cf_clearance'] = cf_clearance_value
+            self.config['cf_clearance'] = cf_clearance["value"]
             self.config['user_agent'] = ua
+            await page.close()
+            await content.close()
+            await browser.close()
 
     def send_feedback(
         self,
