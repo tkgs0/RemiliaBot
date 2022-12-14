@@ -149,7 +149,7 @@ class AsyncChatbot:
                     self.config["cf_clearance"],
                 )
             # Set proxies
-            if self.config.get("proxy", "") != "":
+            if self.config.get("proxy"):
                 s.proxies = {
                     "http": self.config["proxy"],
                     "https": self.config["proxy"],

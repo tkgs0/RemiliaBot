@@ -28,6 +28,7 @@ CHATGPT:
   cf_clearance: ''
   proxy: ''
   accept_language: 'en-US,en'
+  user_agent: ''
 
 """.strip()
 
