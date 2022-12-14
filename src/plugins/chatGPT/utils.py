@@ -6,7 +6,6 @@ except ModuleNotFoundError:
 
 from .revChatGPT import AsyncChatbot as Chatbot
 import time
-from src.config import chatGPT_token
 
 
 conf_path = Path() / 'data' / 'chatGPT' / 'conf.json'
@@ -15,7 +14,7 @@ conf_path.parent.mkdir(parents=True, exist_ok=True)
 CHATGPT = (
     json.loads(conf_path.read_text('utf-8'))
     if conf_path.is_file()
-    else chatGPT_token()
+    else {'session_token': ''}
 )
 
 
@@ -70,6 +69,8 @@ async def ask(user: str, msg: str):
             CHATGPT.pop('accept_language')
         save_conf()
         return 'Done.'
+    if not CHATGPT['session_token']:
+        return '未设置token'
 
     chatbot = Chatbot(CHATGPT)
     try:

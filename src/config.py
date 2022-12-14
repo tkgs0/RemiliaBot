@@ -22,12 +22,6 @@ SETU:
   # pximg图片代理, 需要填写前缀 https:// 或 http://
   # 留空为默认值 'https://i.pixiv.re'
 
-CHATGPT: 
-  # 参考 https://github.com/acheong08/ChatGPT/wiki/Setup
-  session_token: ''
-  proxy: ''
-  accept_language: 'en-US,en'
-
 """.strip()
 
 
