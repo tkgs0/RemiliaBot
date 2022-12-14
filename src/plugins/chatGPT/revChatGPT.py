@@ -7,6 +7,8 @@ import asyncio
 
 import httpx
 
+import nest_asyncio
+
 from typing import List
 
 from playwright.async_api import async_playwright
@@ -22,7 +24,6 @@ def generate_uuid() -> str:
     """
     uid = str(uuid.uuid4())
     return uid
-
 
 class Debugger:
     def __init__(self, debug: bool = False):
@@ -70,15 +71,15 @@ class AsyncChatbot:
     :return: The Chatbot object
     :rtype: :obj:`Chatbot`
     """
-    config: json
-    conversation_id: str
+    config: dict
+    conversation_id: str|None
     parent_id: str
     base_url: str
     headers: dict
     conversation_id_prev_queue: List
     parent_id_prev_queue: List
     request_timeout: int
-    captcha_solver: any
+    captcha_solver: bool|None
 
     def __init__(self, config, conversation_id=None, parent_id=None, debug=False, request_timeout=100,
                  captcha_solver=None, base_url="https://chat.openai.com/", max_rollbacks=20):
@@ -129,53 +130,7 @@ class AsyncChatbot:
             self.config["Authorization"]
         self.headers["User-Agent"] = self.config["user_agent"]
 
-    async def __get_chat_stream(self, data) -> None:
-        """
-        Generator for the chat stream -- Internal use only
-
-        :param data: The data to send
-        :type data: :obj:`dict`
-
-        :return: None
-        """
-        s = httpx.AsyncClient()
-        # Set cloudflare cookies
-        if "cf_clearance" in self.config:
-            s.cookies.set(
-                "cf_clearance",
-                self.config["cf_clearance"],
-            )
-        async with s.stream(
-            'POST',
-            self.base_url + "backend-api/conversation",
-            headers=self.headers,
-            data=json.dumps(data),
-            timeout=self.request_timeout,
-        ) as response:
-            async for line in response.aiter_lines():
-                try:
-                    line = line[:-1]
-                    if line == "" or line == "data: [DONE]":
-                        continue
-                    line = line[6:]
-                    line = json.loads(line)
-                    if len(line["message"]["content"]["parts"]) == 0:
-                        continue
-                    message = line["message"]["content"]["parts"][0]
-                    self.conversation_id = line["conversation_id"]
-                    self.parent_id = line["message"]["id"]
-                    yield {
-                        "message": message,
-                        "conversation_id": self.conversation_id,
-                        "parent_id": self.parent_id,
-                    }
-                except Exception as exc:
-                    self.debugger.log(
-                        f"Error when handling response, got values{line}")
-                    raise Exception(
-                        f"Error when handling response, got values{line}") from exc
-
-    async def __get_chat_text(self, data) -> dict:
+    async def __get_chat_text(self, data) -> dict|None:
         """
         Get the chat response as text -- Internal use only
         :param data: The data to send
@@ -201,7 +156,7 @@ class AsyncChatbot:
                 }
             response = await s.post(
                 self.base_url + "backend-api/conversation",
-                data=json.dumps(data),
+                data=data,
                 timeout=self.request_timeout,
             )
             try:
@@ -210,17 +165,21 @@ class AsyncChatbot:
             except Exception as exc:
                 self.debugger.log("Incorrect response from OpenAI API")
                 raise Exception("Incorrect response from OpenAI API") from exc
-            response = json.loads(response)
-            self.parent_id = response["message"]["id"]
-            self.conversation_id = response["conversation_id"]
-            message = response["message"]["content"]["parts"][0]
-            return {
-                "message": message,
-                "conversation_id": self.conversation_id,
-                "parent_id": self.parent_id,
-            }
+            # Check if it is JSON
+            if response.startswith("{"):
+                response = json.loads(response)
+                self.parent_id = response["message"]["id"]
+                self.conversation_id = response["conversation_id"]
+                message = response["message"]["content"]["parts"][0]
+                return {
+                    "message": message,
+                    "conversation_id": self.conversation_id,
+                    "parent_id": self.parent_id,
+                }
+            else:
+                return None
 
-    async def get_chat_response(self, prompt: str, output="text", conversation_id=None, parent_id=None) -> dict or None:
+    async def get_chat_response(self, prompt: str, output="text", conversation_id=None, parent_id=None) -> dict | None:
         """
         Get the chat response.
 
@@ -256,8 +215,6 @@ class AsyncChatbot:
             self.parent_id_prev_queue.pop(0)
         if output == "text":
             return await self.__get_chat_text(data)
-        elif output == "stream":
-            return self.__get_chat_stream(data)
         else:
             raise ValueError("Output must be either 'text' or 'stream'")
 
@@ -354,23 +311,23 @@ class AsyncChatbot:
         :return: None
         """
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=False)
+            browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
             if 'session_token' in self.config:
                 await async_stealth(page, pure=False)
             else:
                 await async_stealth(page, pure=False)
             await page.goto('https://chat.openai.com/')
-            page_wait_for_url = 'https://chat.openai.com/chat' if not self.config.get(
-                'session_token') else None
+            page_wait_for_url = 'https://chat.openai.com/chat' if not self.config.get('session_token') else ''
             res = await async_cf_retry(
                 page, wait_for_url=page_wait_for_url)
+            cf_clearance_value = None
             if res:
                 cookies = await page.context.cookies()
                 for cookie in cookies:
                     if cookie.get('name') == 'cf_clearance':
                         cf_clearance_value = cookie.get('value')
-                        self.debugger.log(cf_clearance_value)
+                        self.debugger.log(str(cf_clearance_value))
                     elif cookie.get('name') == '__Secure-next-auth.session-token':
                         self.config['session_token'] = cookie.get('value')
                 ua = await page.evaluate('() => {return navigator.userAgent}')
@@ -423,7 +380,7 @@ class AsyncChatbot:
         response = httpx.post(
             url,
             headers=self.headers,
-            data=json.dumps(data),
+            data=data,
             timeout=self.request_timeout,
         )
 
