@@ -43,7 +43,7 @@ class AsyncChatbot:
         self.config["accept_language"] = (self.config["accept_language"]
             if self.config.get("accept_language")
             else "en-US,en")
-        self.config["user_agent"] = (self.config.get("user_agent")
+        self.config["user_agent"] = (self.config["user_agent"]
             if self.config.get("user_agent")
             else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
         self.headers = {
@@ -253,8 +253,7 @@ class AsyncChatbot:
         """
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{browser.version} Safari/537.36"
-            content = await browser.new_context(user_agent=ua)
+            content = await browser.new_context(user_agent=self.config['user_agent'])
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
             await page.goto("https://chat.openai.com/")
@@ -269,9 +268,9 @@ class AsyncChatbot:
                         cf_clearance = i
                         break
             else:
+                logger.error("cf challenge fail")
                 raise Exception("cf challenge fail")
             self.config["cf_clearance"] = cf_clearance["value"]
-            self.config["user_agent"] = ua
             await page.close()
             await content.close()
             await browser.close()
