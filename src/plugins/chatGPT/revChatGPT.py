@@ -318,7 +318,7 @@ class AsyncChatbot:
             else:
                 await async_stealth(page, pure=False)
             await page.goto('https://chat.openai.com/')
-            page_wait_for_url = 'https://chat.openai.com/chat' if not self.config.get('session_token') else ''
+            page_wait_for_url = 'https://chat.openai.com/chat' if self.config.get('session_token') else ''
             res = await async_cf_retry(
                 page, wait_for_url=page_wait_for_url)
             cf_clearance_value = None
