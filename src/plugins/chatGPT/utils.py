@@ -9,8 +9,14 @@ import time
 from src.config import chatGPT_token
 
 
-CHATGPT = chatGPT_token()
-chatbot = Chatbot(CHATGPT)
+conf_path = Path() / 'data' / 'chatGPT' / 'conf.json'
+conf_path.parent.mkdir(parents=True, exist_ok=True)
+
+CHATGPT = (
+    json.loads(conf_path.read_text('utf-8'))
+    if conf_path.is_file()
+    else chatGPT_token()
+)
 
 
 file_path = Path() / 'data' / 'chatGPT' / 'user_chat.json'
@@ -23,13 +29,50 @@ user_chat = (
 )
 
 
+def save_conf() -> None:
+    conf_path.write_text(
+        json.dumps(CHATGPT, ensure_ascii=False, escape_forward_slashes=False),
+        encoding='utf-8'
+    )
+
+
 def save_chat() -> None:
     file_path.write_text(json.dumps(user_chat), encoding='utf-8')
 
 
 async def ask(user: str, msg: str):
+    if msg.startswith('设置token'):
+        token = msg.replace('设置token', '').strip()
+        CHATGPT['session_token'] = token
+        save_conf()
+        return 'Done.'
+    if msg.startswith('设置proxy'):
+        proxy = msg.replace('设置proxy', '').strip()
+        if proxy:
+            CHATGPT['proxy'] = proxy
+        else:
+            CHATGPT.pop('proxy')
+        save_conf()
+        return 'Done.'
+    if msg.startswith('设置UA'):
+        ua = msg.replace('设置UA', '').strip()
+        if ua:
+            CHATGPT['user_agent'] = ua
+        else:
+            CHATGPT.pop('user_agent')
+        save_conf()
+        return 'Done.'
+    if msg.startswith('设置lang'):
+        lang = msg.replace('设置lang', '').strip()
+        if lang:
+            CHATGPT['accept_language'] = lang
+        else:
+            CHATGPT.pop('accept_language')
+        save_conf()
+        return 'Done.'
+
+    chatbot = Chatbot(CHATGPT)
     try:
-        
         recmd = ['重置会话', '重設對談']
         if user in user_chat:
             start_time = user_chat[user]['time']
@@ -59,7 +102,7 @@ async def ask(user: str, msg: str):
         })
         save_chat()
         
-        return resp['message'] if resp else '发生了一个错误, 返回值为空'
+        return resp['message'] if resp else '发生了一些问题, 返回值为空'
 
     except Exception as e:
         return repr(e)
