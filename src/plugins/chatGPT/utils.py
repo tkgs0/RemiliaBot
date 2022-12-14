@@ -30,7 +30,7 @@ user_chat = (
 
 def save_conf() -> None:
     conf_path.write_text(
-        json.dumps(CHATGPT, ensure_ascii=False, escape_forward_slashes=False),
+        json.dumps(CHATGPT, ensure_ascii=False),
         encoding='utf-8'
     )
 
