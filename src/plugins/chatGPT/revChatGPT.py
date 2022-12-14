@@ -57,8 +57,12 @@ class AsyncChatbot:
         self.max_rollbacks = max_rollbacks
         self.conversation_id_prev_queue = []
         self.parent_id_prev_queue = []
-        self.config["accept_language"] = 'en-US,en' if "accept_language" not in self.config.keys(
-        ) else self.config["accept_language"]
+        self.config["accept_language"] = (self.config["accept_language"]
+            if self.config.get("accept_language")
+            else "en-US,en")
+        self.config["user_agent"] = (self.config.get("user_agent")
+            if self.config.get("user_agent")
+            else "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0")
         self.headers = {
             "Accept": "text/event-stream",
             "Authorization": "Bearer ",
@@ -207,7 +211,7 @@ class AsyncChatbot:
                 )
                 # s.cookies.set(
                 #     "__Secure-next-auth.csrf-token",
-                #     self.config['csrf_token']
+                #     self.config["csrf_token"]
                 # )
                 response = await s.get(
                     self.base_url + "api/auth/session",
@@ -227,9 +231,9 @@ class AsyncChatbot:
                     raise Exception("Wrong response code")
             # Try to get new session token and Authorization
             try:
-                if 'error' in response.json():
+                if "error" in response.json():
                     self.debugger.log("Error in response JSON")
-                    self.debugger.log(response.json()['error'])
+                    self.debugger.log(response.json()["error"])
                     raise Exception
                 self.config["session_token"] = response.cookies.get(
                     "__Secure-next-auth.session-token",
@@ -242,13 +246,13 @@ class AsyncChatbot:
                 if response.json() == {}:
                     self.debugger.log("Empty response")
                     self.debugger.log("Probably invalid session token")
-                # Check if ['detail']['code'] == 'token_expired' in response JSON
+                # Check if ["detail"]["code"] == "token_expired" in response JSON
                 # First check if detail is in response JSON
-                elif 'detail' in response.json():
+                elif "detail" in response.json():
                     # Check if code is in response JSON
-                    if 'code' in response.json()['detail']:
+                    if "code" in response.json()["detail"]:
                         # Check if code is token_expired
-                        if response.json()['detail']['code'] == 'token_expired':
+                        if response.json()["detail"]["code"] == "token_expired":
                             self.debugger.log("Token expired")
                 raise Exception("Failed to refresh session") from exc
             return
@@ -266,11 +270,11 @@ class AsyncChatbot:
         """
         async with async_playwright() as p:
             browser = await p.firefox.launch(headless=True)
-            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/{browser.version}"
+            ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:{browser.version}) Gecko/20100101 Firefox/{browser.version}"
             content = await browser.new_context(user_agent=ua)
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
-            await page.goto('https://chat.openai.com/')
+            await page.goto("https://chat.openai.com/")
             cf_clearance = None
             for _ in range(6):
                 if cf_clearance:
@@ -283,8 +287,8 @@ class AsyncChatbot:
                         break
             else:
                 raise Exception("cf challenge fail")
-            self.config['cf_clearance'] = cf_clearance["value"]
-            self.config['user_agent'] = ua
+            self.config["cf_clearance"] = cf_clearance["value"]
+            self.config["user_agent"] = ua
             await page.close()
             await content.close()
             await browser.close()
