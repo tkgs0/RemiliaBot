@@ -150,7 +150,7 @@ class AsyncChatbot:
                     self.config["cf_clearance"],
                 )
             # Set proxies
-            if self.config.get("proxy", "") != "":
+            if self.config.get("proxy"):
                 s.proxies = {
                     "http": self.config["proxy"],
                     "https": self.config["proxy"],
@@ -229,14 +229,12 @@ class AsyncChatbot:
             self.conversation_id = self.conversation_id_prev_queue.pop()
             self.parent_id = self.parent_id_prev_queue.pop()
 
-    async def refresh_session(self, running_in_async=False) -> None:
+    async def refresh_session(self) -> None:
         """
         Refresh the session.
 
         :return: None
         """
-        if running_in_async:
-            nest_asyncio.apply()
         # Either session_token, email and password or Authorization is required
         if not self.config.get("cf_clearance") or not self.config.get("session_token"):
             await self.__get_cf_cookies()
