@@ -1,7 +1,4 @@
-import json
-import uuid
-import asyncio
-import httpx
+import json, uuid, asyncio, httpx, time
 from typing import List
 from playwright.async_api import async_playwright
 from utils.log import logger
@@ -155,7 +152,7 @@ class AsyncChatbot:
             self.conversation_id_prev_queue.pop(0)
         while len(self.parent_id_prev_queue) > self.max_rollbacks:
             self.parent_id_prev_queue.pop(0)
-        return [await self.__get_chat_text(data), self.config]
+        return [await self.__get_chat_text(data), self.config['session_token']]
 
     def rollback_conversation(self, num=1) -> None:
         """
@@ -180,7 +177,7 @@ class AsyncChatbot:
                 # Set cookies
                 s.cookies.set(
                     "__Secure-next-auth.callback-url",
-                    "https%3A%2F%2Fchat.openai.com%2Fchat"
+                    r"https%3A%2F%2Fchat.openai.com%2Fchat"
                 )
                 s.cookies.set(
                     "__Secure-next-auth.session-token",
@@ -253,15 +250,37 @@ class AsyncChatbot:
         async with async_playwright() as p:
             browser = await p.firefox.launch(headless=True)
             content = await browser.new_context(user_agent=self.config['user_agent'])
+            await content.add_cookies([
+                {
+                    'name': '__Secure-next-auth.session-token',
+                    'value': self.config['session_token'],
+                    'domain': 'chat.openai.com',
+                    'expires': time.time()+2592000.00,
+                    'httpOnly': True,
+                    'secure': True,
+                    'sameSite': 'Lax'
+                },
+                {
+                    'name': '__Secure-next-auth.callback-url',
+                    'value': r'https%3A%2F%2Fchat.openai.com%2Fchat',
+                    'domain': 'chat.openai.com',
+                    'httpOnly': True,
+                    'secure': True,
+                    'sameSite': 'Lax'
+                },
+            ])
             page = await content.new_page()
             await page.add_init_script("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});")
-            await page.goto("https://chat.openai.com/")
+            await page.goto("https://chat.openai.com/chat")
             cf_clearance = None
             for _ in range(6):
                 if cf_clearance:
                     break
                 await asyncio.sleep(5)
                 cookies = await content.cookies()
+                for i in cookies:
+                    if i["name"] == '__Secure-next-auth.session-token':
+                        self.config['session_token'] = i['value']
                 for i in cookies:
                     if i["name"] == "cf_clearance":
                         cf_clearance = i
