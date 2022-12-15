@@ -42,7 +42,7 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif content[1]:
         await update.message.reply_photo(
             photo=content[0],
-            caption=content[0][1] + ('\n'+content[2] if content[2] else '')
+            caption=content[2]
         )
     else:
         await update.message.reply_text(str(content[0]))

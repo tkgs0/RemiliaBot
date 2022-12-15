@@ -38,20 +38,29 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
                 )
             } for i in content]
 
-            pics, status = await down_pic(content)
+            # pics, status = await down_pic(content)
 
             logger.success('complete.')
 
-            if not pics:
-                return ['\n'.join(status), False]
-            if len(pics) == 1:
-                return [pics[0], 1, '\n'.join(status) if status else '']
+            if len(content) == 1:
+                return [content[0]['url'], 1, content[0]['caption']]
 
             media = [
-                InputMediaPhoto(media=i[0], caption=i[1])
-                for i in pics
+                InputMediaPhoto(media=i['url'], caption=i['caption'])
+                for i in content
             ]
             return [media, 2]
+
+            # if not pics:
+            #     return ['\n'.join(status), False]
+            # if len(pics) == 1:
+            #     return [pics[0], 1, '\n'.join(status) if status else '']
+
+            # media = [
+            #     InputMediaPhoto(media=i[0], caption=i[1])
+            #     for i in pics
+            # ]
+            # return [media, 2]
 
         except httpx.ProxyError as e:
             logger.warning(e)
@@ -64,6 +73,7 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
 
 
+"""
 async def down_pic(content):
     async with AsyncClient() as client:
         headers = {
@@ -80,3 +90,4 @@ async def down_pic(content):
                 logger.error(sc := f'获取图片 {i["pid"]} 失败: {re.status_code}')
                 status.append(sc)
         return pics, status
+"""
