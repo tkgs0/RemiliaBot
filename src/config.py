@@ -48,8 +48,3 @@ SUPERUSERS = config['SUPERUSERS']
 
 SETU = config['SETU']
 
-def chatGPT_token():
-    CHATGPT = config['CHATGPT']
-    content = {i: CHATGPT[i] for i in CHATGPT if CHATGPT[i]}
-    return content
-

@@ -20,7 +20,6 @@ logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
 from .plugins import (
     block,
     chat,
-    chatGPT,
     cmd,
     code_runner,
     Gua64,
@@ -40,7 +39,6 @@ class run():
     code_runner.run(app)
     Gua64.run(app)
     setu.run(app)
-    chatGPT.run(app)
 
     chat.run(app)
 
