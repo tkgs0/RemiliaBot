@@ -103,7 +103,7 @@ class AsyncChatbot:
                 response = response[6:]
             except Exception as exc:
                 logger.error("Incorrect response from OpenAI API")
-                raise Exception("Incorrect response from OpenAI API") from exc
+                raise Exception(response) from exc
             # Check if it is JSON
             if response.startswith("{"):
                 response = json.loads(response)
@@ -279,11 +279,12 @@ class AsyncChatbot:
                 await asyncio.sleep(5)
                 cookies = await content.cookies()
                 for i in cookies:
-                    if i["name"] == '__Secure-next-auth.session-token':
-                        self.config['session_token'] = i['value']
-                for i in cookies:
                     if i["name"] == "cf_clearance":
                         cf_clearance = i
+                        for j in cookies:
+                            if j["name"] == '__Secure-next-auth.session-token':
+                                self.config['session_token'] = j['value']
+                                break
                         break
             else:
                 logger.error("cf challenge fail")
