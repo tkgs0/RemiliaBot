@@ -38,6 +38,8 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
                 )
             } for i in content]
 
+            logger.info('complete.')
+
             # pics, status = await down_pic(content)
 
             # if not pics:
@@ -50,8 +52,6 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
             #     for i in pics
             # ]
             # return [media, 2, '\n'.join(status) if status else '']
-
-            logger.info('complete.')
 
             if len(content) == 1:
                 return [content[0]['url'], 1, content[0]['caption']]
@@ -73,6 +73,7 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
 
 
+"""
 async def down_pic(content):
     async with AsyncClient() as client:
         headers = {
@@ -89,3 +90,4 @@ async def down_pic(content):
                 logger.error(sc := f'pid {i["pid"]} 获取图片失败: {re.status_code}')
                 status.append(sc)
         return pics, status
+"""
