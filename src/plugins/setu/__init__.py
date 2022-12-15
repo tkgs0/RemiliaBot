@@ -32,10 +32,10 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await update.message.reply_media_group(
                 media=content[0],
-                read_timeout=120,
-                write_timeout=120,
-                connect_timeout=120,
-                pool_timeout=120,
+                read_timeout=60,
+                write_timeout=60,
+                connect_timeout=60,
+                pool_timeout=60,
             )
         except Exception as e:
             await update.message.chat.send_message(repr(e))
