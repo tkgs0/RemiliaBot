@@ -30,13 +30,14 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     if content[1] == 2:
         await update.message.reply_media_group(
-            media = content[0],
-            caption = content[2] if content[2] else None)
+            media=content[0],
+            read_timeout=60,
+            write_timeout=60,
+            connect_timeout=60,
+            pool_timeout=60,
+        )
     elif content[1]:
-        pic = content[0]
-        await update.message.reply_photo(
-            photo = pic[0],
-            caption = pic[1] + ('\n'+content[2] if content[2] else ''))
+        await update.message.reply_photo(photo=content[0], caption=content[2])
     else:
         await update.message.reply_text(str(content[0]))
 

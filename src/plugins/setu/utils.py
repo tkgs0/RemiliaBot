@@ -38,19 +38,29 @@ async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
                 )
             } for i in content]
 
-            pics, status = await down_pic(content)
+            # pics, status = await down_pic(content)
 
-            if not pics:
-                return ['\n'.join(status), False]
-            if len(pics) == 1:
-                return [pics[0], 1, 
-                    '\n'.join(status) if status else '']
+            # if not pics:
+            #     return ['\n'.join(status), False]
+            # if len(pics) == 1:
+            #     return [pics[0], 1, '\n'.join(status) if status else '']
+
+            # media = [
+            #     InputMediaPhoto(media=i[0], caption=i[1])
+            #     for i in pics
+            # ]
+            # return [media, 2, '\n'.join(status) if status else '']
+
+            logger.info('complete.')
+
+            if len(content) == 1:
+                return [content[0]['url'], 1, content[0]['caption']]
 
             media = [
-                InputMediaPhoto(media=i[0], caption=i[1])
-                for i in pics
+                InputMediaPhoto(media=i['url'], caption=i['caption'])
+                for i in content
             ]
-            return [media, 2, '\n'.join(status) if status else '']
+            return [media, 2]
 
         except httpx.ProxyError as e:
             logger.warning(e)
