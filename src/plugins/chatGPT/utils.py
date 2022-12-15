@@ -39,7 +39,7 @@ def save_chat() -> None:
     file_path.write_text(json.dumps(user_chat), encoding='utf-8')
 
 
-async def ask(user: str, msg: str):
+async def ask(user: str, msg: str) -> str:
     if not CHATGPT['session_token']:
         return '未设置token'
 
@@ -55,7 +55,7 @@ async def ask(user: str, msg: str):
                     return '会话已重置'
                 else:
                     return '重置选项冷却中...'
-            resp = await chatbot.get_chat_response(
+            resp, conf = await chatbot.get_chat_response(
                 msg,
                 conversation_id=user_chat[user]['cid'],
                 parent_id=user_chat[user]['pid']
@@ -63,7 +63,7 @@ async def ask(user: str, msg: str):
         else:
             if msg in recmd:
                 return '会话不存在'
-            resp = await chatbot.get_chat_response(msg)
+            resp, conf = await chatbot.get_chat_response(msg)
 
         user_chat.update({
             user: {
@@ -72,8 +72,9 @@ async def ask(user: str, msg: str):
                 'time': time.time()
             }
         })
+        CHATGPT.update(conf)
+        save_conf()
         save_chat()
-        
         return resp['message'] if resp else '发生了一些问题, 返回值为空'
 
     except Exception as e:

@@ -121,7 +121,7 @@ class AsyncChatbot:
             else:
                 return None
 
-    async def get_chat_response(self, prompt: str, conversation_id=None, parent_id=None) -> dict | None:
+    async def get_chat_response(self, prompt: str, conversation_id=None, parent_id=None) -> list:
         """
         Get the chat response.
 
@@ -155,7 +155,7 @@ class AsyncChatbot:
             self.conversation_id_prev_queue.pop(0)
         while len(self.parent_id_prev_queue) > self.max_rollbacks:
             self.parent_id_prev_queue.pop(0)
-        return await self.__get_chat_text(data)
+        return [await self.__get_chat_text(data), self.config]
 
     def rollback_conversation(self, num=1) -> None:
         """
