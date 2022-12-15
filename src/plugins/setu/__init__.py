@@ -29,13 +29,16 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pixproxy=SETU['pixproxy']
     )
     if content[1] == 2:
-        await update.message.reply_media_group(
-            media=content[0],
-            read_timeout=120,
-            write_timeout=120,
-            connect_timeout=120,
-            pool_timeout=120,
-        )
+        try:
+            await update.message.reply_media_group(
+                media=content[0],
+                read_timeout=120,
+                write_timeout=120,
+                connect_timeout=120,
+                pool_timeout=120,
+            )
+        except Exception as e:
+            await update.message.chat.send_message(repr(e))
     elif content[1]:
         await update.message.reply_photo(
             photo=content[0],
