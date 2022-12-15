@@ -254,7 +254,7 @@ class AsyncChatbot:
                 {
                     'name': '__Secure-next-auth.session-token',
                     'value': self.config['session_token'],
-                    'domain': 'chat.openai.com',
+                    'url': 'chat.openai.com',
                     'expires': time.time()+2592000.00,
                     'httpOnly': True,
                     'secure': True,
@@ -263,7 +263,7 @@ class AsyncChatbot:
                 {
                     'name': '__Secure-next-auth.callback-url',
                     'value': r'https%3A%2F%2Fchat.openai.com%2Fchat',
-                    'domain': 'chat.openai.com',
+                    'url': 'chat.openai.com',
                     'httpOnly': True,
                     'secure': True,
                     'sameSite': 'Lax'
