@@ -6,4 +6,3 @@ psutil
 asyncio
 httpx
 playwright
-cf_clearance2
