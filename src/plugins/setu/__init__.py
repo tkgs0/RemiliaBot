@@ -21,7 +21,7 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         tag.remove(tag[0])
     else:
         tag = context.args
-        num = 6
+        num = 1
     content = await get_setu(
         tag=tag,
         r18=SETU['r18'],

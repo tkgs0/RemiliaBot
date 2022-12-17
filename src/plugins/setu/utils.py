@@ -7,7 +7,7 @@ from telegram import InputMediaPhoto
 from utils.log import logger
 
 
-async def get_setu(tag=list(), r18=0, num=6, pixproxy='') -> list:
+async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
     logger.info('loading...')
     async with AsyncClient() as client:
         req_url = 'https://api.lolicon.app/setu/v2'
