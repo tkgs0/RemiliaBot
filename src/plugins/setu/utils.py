@@ -15,7 +15,7 @@ async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
             'tag': tag,
             'r18': r18,
             'size': 'regular',
-            'num': num if num < 11 else 10
+            'num': num if num < 11 else 1
         }
         try:
             res = await client.get(req_url, params=params, timeout=120)
