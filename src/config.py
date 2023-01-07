@@ -22,6 +22,10 @@ SETU:
   # pximg图片代理, 需要填写前缀 https:// 或 http://
   # 留空为默认值 'https://i.pixiv.re'
 
+ACGGOV:
+  token: ''
+  pixproxy: ''
+
 """.strip()
 
 
@@ -48,3 +52,6 @@ SUPERUSERS = config['SUPERUSERS']
 
 SETU = config['SETU']
 
+class ACGGOV():
+    token: str = config['ACGGOV'].get('token', '')
+    pixproxy: str = config['ACGGOV'].get('pixproxy', '')
