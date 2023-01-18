@@ -28,7 +28,6 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
 }
 
-
 # 从ownthink_api拿到消息
 async def get_reply(msg, NICKNAME):
     for i in string.punctuation:
