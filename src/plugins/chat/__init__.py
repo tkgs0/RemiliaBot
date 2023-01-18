@@ -63,9 +63,8 @@ async def reply(msg: str, NICKNAME: str):
         return Look.like()
     # 从字典里获取结果
     result = await get_chat_result(msg)
-    # 如果词库没有结果，则调用ownthink获取智能回复
-    if result == None:
-        url = f"https://api.ownthink.com/bot?appid=xiaosi&userid=user&spoken={msg}"
-        content = await get_reply(url, NICKNAME)
+    # 如果词库没有结果，则调用对话api获取回复
+    if not result:
+        content = await get_reply(msg, NICKNAME)
         return content
     return result

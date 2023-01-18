@@ -8,9 +8,11 @@ from utils.log import logger
 from src.config import ACGGOV
 
 
-headers = {                                                                         'token': ACGGOV.token if ACGGOV.token else 'apikey', 
+headers = {
+    'token': ACGGOV.token if ACGGOV.token else 'apikey', 
     'referer': 'https://www.acgmx.com/',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'                                 }
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+}
 
 
 def generate_image_struct():
