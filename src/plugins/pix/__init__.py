@@ -27,18 +27,18 @@ async def pix(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if content[1] == 2:
         try:
             await update.message.reply_media_group(
-                media=content[0],
-                read_timeout=60,
-                write_timeout=60,
-                connect_timeout=60,
-                pool_timeout=60,
+                media = content[0],
+                read_timeout = 60,
+                write_timeout = 60,
+                connect_timeout = 60,
+                pool_timeout = 60,
             )
         except Exception as e:
             await update.message.chat.send_message(repr(e))
     elif content[1]:
         await update.message.reply_photo(
-            photo=content[0],
-            caption=content[2]
+            photo = content[0],
+            caption = content[2]
         )
     else:
         await update.message.reply_text(str(content[0]))

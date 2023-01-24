@@ -41,10 +41,7 @@ async def get_pix(keyword=['R-18',], img=1) -> list:
         }
         try:
             res = await client.get(
-                url,
-                params=params,
-                headers=headers,
-                timeout=120
+                url, params=params, headers=headers, timeout=30
             )
         except httpx.HTTPError as e:
             logger.warning(e)
