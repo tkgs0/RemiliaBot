@@ -80,10 +80,11 @@ async def down_pic(content, pixproxy):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
         }
         if not pixproxy:
-            headers.update({
+            headers = {
                 'Host': 'i.pximg.net',
-                'Referer': 'https://www.pixiv.net/'
-            })
+                'Referer': 'https://www.pixiv.net/',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+            }
         pics, status = list(), list()
         for i in content:
             res = await client.get(
