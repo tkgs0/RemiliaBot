@@ -19,12 +19,11 @@ async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
         }
         try:
             res = await client.get(req_url, params=params, timeout=30)
-            logger.info(res.content)
         except httpx.HTTPError as e:
             logger.warning(e)
             return [f'API异常{e}', False]
         try:
-            content = res.json()['data']
+            logger.debug(content := res.json()['data'])
             _ = content[0]
 
             content = [{

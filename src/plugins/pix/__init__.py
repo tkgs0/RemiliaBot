@@ -37,8 +37,8 @@ async def pix(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.chat.send_message(repr(e))
     elif content[1]:
         await update.message.reply_photo(
-            photo = content[0],
-            caption = content[2]
+            photo = content[0][0],
+            caption = content[0][1] + content[2]
         )
     else:
         await update.message.reply_text(str(content[0]))

@@ -11,7 +11,7 @@ from utils.log import (
 from .config import TOKEN
 
 
-logging.basicConfig(handlers=[LoguruHandler()], level=logging.INFO)
+logging.basicConfig(handlers=[LoguruHandler()], level=logging.DEBUG)
 
 logger.remove()
 logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
