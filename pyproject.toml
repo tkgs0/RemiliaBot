@@ -6,7 +6,7 @@ authors = ["月ヶ瀬"]
 license = "GPL-3.0"
 readme = "README.md"
 packages = [
-    { include = "RemiliaBot" },
+    { include = "remilia" },
 ]
 homepage = "https://github.com/tkgs0/RemiliaBot"
 repository = "https://github.com/tkgs0/RemiliaBot"
