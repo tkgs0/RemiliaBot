@@ -21,10 +21,9 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         tag = context.args
         num = 1
-    content = await get_setu(
-        tag = tag,
-        num = num,
-    )
+    
+    content = await get_setu(tag, num)
+
     if content[1] == 2:
         try:
             await update.message.reply_media_group(
