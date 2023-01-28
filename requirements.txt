@@ -1,9 +1,5 @@
-python-telegram-bot>=20.0a6
+python-telegram-bot>=20.0
 PyYAML
 loguru
 APScheduler
 psutil
-asyncio
-httpx
-requests
-playwright
