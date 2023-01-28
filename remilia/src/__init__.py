@@ -8,13 +8,13 @@ from remilia.log import (
     LoguruHandler,
     default_format
 )
-from remilia.config import TOKEN
+from remilia.config import LOG_LEVEL, TOKEN
 
 
 logging.basicConfig(handlers=[LoguruHandler()], level=logging.DEBUG)
 
 logger.remove()
-logger.add(sys.stdout, level='INFO', diagnose=False, format=default_format)
+logger.add(sys.stdout, level=LOG_LEVEL, diagnose=False, format=default_format)
 
 
 from .plugins import (

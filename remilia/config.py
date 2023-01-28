@@ -56,6 +56,7 @@ if not filepath.is_file():
 config = yaml.safe_load(filepath.read_text('utf-8'))
 
 _config = Config.parse_obj(config)
+LOG_LEVEL: str = _config.LOG_LEVEL
 TOKEN: str = _config.TOKEN
 NICKNAME: list = _config.NICKNAME
 SUPERUSERS: list = _config.SUPERUSERS
