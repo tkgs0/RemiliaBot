@@ -1,4 +1,5 @@
 python-telegram-bot>=20.0
+pydantic
 PyYAML
 loguru
 APScheduler

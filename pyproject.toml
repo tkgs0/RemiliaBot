@@ -15,6 +15,7 @@ keywords = ["RemiliaBot", "Telegram Bot", "Telegram"]
 [tool.poetry.dependencies]
 python = "^3.9"
 python-telegram-bot = ">=20.0"
+pydantic = ">=1.10.0,!=1.10.3"
 pyyaml = ">=6.0"
 loguru = ">=0.6.0"
 apscheduler = ">=3.9.1.post1"
