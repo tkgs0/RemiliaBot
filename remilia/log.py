@@ -33,7 +33,7 @@ default_format: str = (
     "<g>{time:MM-DD HH:mm:ss}</g> "
     "[<lvl>{level}</lvl>] "
     "<c><u>{name}</u></c> | "
-    # "<c>{function}:{line}</c>| "
+    "<c>{function}:{line}</c>\n"
     "{message}"
 )
 """默认日志格式"""
