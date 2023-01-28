@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "RemiliaBot"
+version = "0.1.0"
+description = "女生自用(?)电报机器人"
+authors = ["月ヶ瀬"]
+license = "GPL-3.0"
+readme = "README.md"
+packages = [
+    { include = "RemiliaBot" },
+]
+homepage = "https://github.com/tkgs0/RemiliaBot"
+repository = "https://github.com/tkgs0/RemiliaBot"
+keywords = ["RemiliaBot", "Telegram Bot", "Telegram"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-telegram-bot = ">=20.0"
+pyyaml = ">=6.0"
+loguru = ">=0.6.0"
+apscheduler = ">=3.9.1.post1"
+psutil = ">=5.9.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+implicit_reexport = true
+pretty = true
+show_error_codes = true
+strict = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
