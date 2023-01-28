@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 from telegram import InputMediaPhoto
 
-from utils.log import logger
+from remilia.log import logger
 
 
 async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:

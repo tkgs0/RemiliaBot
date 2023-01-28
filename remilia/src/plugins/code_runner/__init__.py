@@ -7,7 +7,7 @@ from telegram.ext import (
     filters
 )
 
-from utils.log import logger
+from remilia.log import logger
 from .data_source import CodeRunner
 
 

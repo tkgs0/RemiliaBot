@@ -2,13 +2,13 @@ import sys
 
 from telegram.ext import ApplicationBuilder
 
-from utils.log import (
+from remilia.log import (
     logging,
     logger,
     LoguruHandler,
     default_format
 )
-from .config import TOKEN
+from remilia.config import TOKEN
 
 
 logging.basicConfig(handlers=[LoguruHandler()], level=logging.DEBUG)

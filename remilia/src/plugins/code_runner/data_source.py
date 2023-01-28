@@ -1,4 +1,4 @@
-import requests
+import httpx
 
 
 
@@ -79,11 +79,13 @@ class CodeRunner():
         }
 
         try:
-            res = requests.post(url, json=js)
+            res = httpx.post(url, json=js)
         except Exception as e:
             return repr(e)
 
         payload = res.json()
+        res.close()
+
         sent = False
         for k in ["stdout", "stderr", "error"]:
             v = payload.get(k)

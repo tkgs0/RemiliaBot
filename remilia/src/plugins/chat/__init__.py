@@ -6,8 +6,8 @@ from telegram.ext import (
     filters
 )
 
-from utils.log import logger
-from src.config import NICKNAME
+from remilia.log import logger
+from remilia.config import NICKNAME
 from .utils import (
     get_reply,
     get_chat_result,

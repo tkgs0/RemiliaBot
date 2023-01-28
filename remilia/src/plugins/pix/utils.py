@@ -4,8 +4,8 @@ from httpx import AsyncClient
 
 from telegram import InputMediaPhoto
 
-from utils.log import logger
-from src.config import ACGGOV
+from remilia.log import logger
+from remilia.config import ACGGOV
 
 
 headers = {

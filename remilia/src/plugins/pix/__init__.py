@@ -4,30 +4,26 @@ from telegram.ext import (
     CommandHandler
 )
 
-from utils.log import logger
-from src.config import SETU
-from .utils import get_setu
+from remilia.log import logger
+from .utils import get_pix
 
 
 def run(application):
-    setu_handler = CommandHandler('setu', setu)
-    application.add_handler(setu_handler)
+    pix_handler = CommandHandler('pix', pix)
+    application.add_handler(pix_handler)
 
 
-async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def pix(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    if (tag := context.args) and is_number(tag[0]):
-        num = int(tag[0])
-        tag.remove(tag[0])
+    if (keyword := context.args) and is_number(keyword[0]):
+        num = int(keyword[0])
+        keyword.remove(keyword[0])
     else:
-        tag = context.args
+        keyword = context.args
         num = 1
-    content = await get_setu(
-        tag = tag,
-        r18 = SETU['r18'],
-        num = num,
-        pixproxy = SETU['pixproxy']
-    )
+
+    content = await get_pix(keyword=keyword, img=num)
+
     if content[1] == 2:
         try:
             await update.message.reply_media_group(

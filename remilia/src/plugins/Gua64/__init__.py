@@ -5,7 +5,7 @@ from telegram.ext import (
     filters
 )
 
-from utils.log import logger
+from remilia.log import logger
 from .Gua64 import encode, decode
 
 

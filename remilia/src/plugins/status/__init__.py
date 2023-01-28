@@ -5,8 +5,8 @@ from telegram.ext import (
     filters
 )
 
-from utils.log import logger
-from src.config import SUPERUSERS
+from remilia.log import logger
+from remilia.config import SUPERUSERS
 from .utils import Status
 
 
@@ -20,5 +20,5 @@ def run(application):
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'[{update.message.chat.type.upper()}]({update.message.chat_id}) {context._user_id}: {update.message.text}')
-    msg, _ = Status().get_status()
+    msg, _ = await Status().get_status()
     await update.message.reply_text(msg)

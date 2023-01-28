@@ -13,8 +13,8 @@ from telegram.ext import (
     filters
 )
 
-from utils.log import logger
-from src.config import SUPERUSERS
+from remilia.log import logger
+from remilia.config import SUPERUSERS
 
 
 file_path = Path() / 'data' / 'chatlist' / 'chatlist.json'

@@ -1,15 +1,18 @@
-import os
-import time
-import psutil
+import os, time, psutil
+from httpx import AsyncClient
 from datetime import datetime
-from utils.log import logger
+from remilia.log import logger
+
 
 _status_msg = """
 > Status Overview
 
-[CPU: {p_cpu}% of {b_cpu}]
-[Memory: {p_mem}% of {b_mem}]
+[CPU: {b_cpu} of {p_cpu}%]
+[Memory: {b_mem} of {p_mem}%]
 [Disk usage: {p_disk}%]
+
+[Baidu: {baidu_}]
+[Google: {google_}]
 
 [Net sent: {inteSENT}MB]
 [Net recv: {inteRECV}MB]
@@ -27,7 +30,7 @@ class Status():
         return "I'm fine."
 
     @staticmethod
-    def get_status() -> tuple:
+    async def get_status() -> tuple:
         try:
             cpu = psutil.cpu_percent(interval=1)
             mem = psutil.virtual_memory().percent
@@ -70,12 +73,17 @@ class Status():
         else:
             is_ok = True
 
+        baidu_ = await get_url('https://www.baidu.com/')
+        google_ = await get_url('https://www.google.com/')
+        
         msg0 = _status_msg.format(
+            b_cpu=f"{b_cpu}%",
+            b_mem="%.1f%%" % b_mem,
             p_cpu=cpu,
             p_mem=mem,
             p_disk=disk,
-            b_cpu=f"{b_cpu}%",
-            b_mem="%.1f%%" % b_mem,
+            baidu_=baidu_,
+            google_=google_,
             inteSENT=inte_send,
             inteRECV=inte_recv,
             bot_time=bot_time,
@@ -83,6 +91,17 @@ class Status():
             msg=msg,
         )
 
-        logger.info(msg0)
         return msg0, is_ok
+
+
+headers = {
+    'Referer': 'https://github.com/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+}
+
+async def get_url(url):
+    async with AsyncClient() as client:
+        response = await client.get(url, headers=headers, timeout=10)
+        await response.aclose()
+        return response.status_code
 
