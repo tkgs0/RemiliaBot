@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "RemiliaBot"
+name = "remilia-bot"
 version = "0.1.0"
 description = "女生自用(?)电报机器人"
 authors = ["月ヶ瀬"]
