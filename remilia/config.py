@@ -1,8 +1,20 @@
 import yaml
 from pathlib import Path
+from pydantic import BaseModel, Extra
+
+
+class Config(BaseModel, extra=Extra.ignore):
+    LOG_LEVEL: str = 'INFO'
+    TOKEN: str = ''
+    NICKNAME: list = ['remilia']
+    SUPERUSERS: list = []
+    SETU: dict = {'r18': 2, 'pixproxy': ''}
+    ACGGOV: dict = {'token': 'apikey', 'pixproxy': ''}
 
 
 default_config = """
+
+LOG_LEVEL: 'DEBUG'
 
 TOKEN: ''  # Telegram Bot API Token
 
@@ -43,15 +55,9 @@ if not filepath.is_file():
 
 config = yaml.safe_load(filepath.read_text('utf-8'))
 
-
-TOKEN = config['TOKEN']
-
-NICKNAME = config['NICKNAME']
-
-SUPERUSERS = config['SUPERUSERS']
-
-SETU = config['SETU']
-
-class ACGGOV():
-    token: str = config['ACGGOV'].get('token', '')
-    pixproxy: str = config['ACGGOV'].get('pixproxy', '')
+_config = Config.parse_obj(config)
+TOKEN: str = _config.TOKEN
+NICKNAME: list = _config.NICKNAME
+SUPERUSERS: list = _config.SUPERUSERS
+SETU: dict = _config.SETU
+ACGGOV: dict = _config.ACGGOV

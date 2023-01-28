@@ -5,10 +5,16 @@ from httpx import AsyncClient
 from telegram import InputMediaPhoto
 
 from remilia.log import logger
+from remilia.config import SETU
 
 
-async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
+r18 = SETU['r18']
+pixproxy = SETU['pixproxy']
+
+
+async def get_setu(tag=[], num=1) -> list:
     logger.info('loading...')
+    
     async with AsyncClient() as client:
         req_url = 'https://api.lolicon.app/setu/v2'
         params = {
@@ -37,7 +43,7 @@ async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
                 )
             } for i in content]
 
-            pics, status = await down_pic(content, pixproxy)
+            pics, status = await down_pic(content)
 
             logger.success('complete.')
 
@@ -73,7 +79,7 @@ async def get_setu(tag=[], r18=0, num=1, pixproxy='') -> list:
 
 
 
-async def down_pic(content, pixproxy):
+async def down_pic(content) -> tuple[list, list]:
     async with AsyncClient() as client:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
@@ -84,7 +90,7 @@ async def down_pic(content, pixproxy):
                 'Referer': 'https://www.pixiv.net/',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
             }
-        pics, status = list(), list()
+        pics, status = [], []
         for i in content:
             res = await client.get(
                 url = (

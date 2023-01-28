@@ -5,7 +5,6 @@ from telegram.ext import (
 )
 
 from remilia.log import logger
-from remilia.config import SETU
 from .utils import get_setu
 
 
@@ -24,9 +23,7 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         num = 1
     content = await get_setu(
         tag = tag,
-        r18 = SETU['r18'],
         num = num,
-        pixproxy = SETU['pixproxy']
     )
     if content[1] == 2:
         try:

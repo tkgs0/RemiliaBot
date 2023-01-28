@@ -8,14 +8,17 @@ from remilia.log import logger
 from remilia.config import ACGGOV
 
 
+token = ACGGOV['token']
+pixproxy = ACGGOV['pixproxy']
+
 headers = {
-    'token': ACGGOV.token if ACGGOV.token else 'apikey', 
+    'token': token if token else 'apikey', 
     'referer': 'https://www.acgmx.com/',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
 }
 
 
-def generate_image_struct():
+def generate_image_struct() -> dict:
     return {
         'id': 0,
         'url': '',
@@ -26,9 +29,9 @@ def generate_image_struct():
         'native': False,
     }
 
-async def get_pix(keyword=['R-18',], img=1) -> list:
+async def get_pix(keyword=['R-18'], img=1) -> list:
     logger.info('loading...')
-
+    
     img = img if img < 11 else 1
     image_list = []
     image = generate_image_struct()
@@ -85,7 +88,7 @@ async def get_pix(keyword=['R-18',], img=1) -> list:
                 )
             } for i in image_list]
 
-            pics, status = await down_pic(content, ACGGOV.pixproxy)
+            pics, status = await down_pic(content)
 
             logger.success('complete.')
 
@@ -121,7 +124,7 @@ async def get_pix(keyword=['R-18',], img=1) -> list:
 
 
 
-async def down_pic(content, pixproxy):
+async def down_pic(content) -> tuple[list, list]:
     async with AsyncClient() as client:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
@@ -132,7 +135,7 @@ async def down_pic(content, pixproxy):
                 'Referer': 'https://www.pixiv.net/',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
             }
-        pics, status = list(), list()
+        pics, status = [], []
         for i in content:
             res = await client.get(
                 url = (
