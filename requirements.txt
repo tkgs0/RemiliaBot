@@ -4,3 +4,4 @@ PyYAML
 loguru
 APScheduler
 psutil
+ujson
