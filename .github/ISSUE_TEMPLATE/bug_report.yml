@@ -24,14 +24,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        在提 issue 前请确保你仔细阅读过文档，搜索过现有的 issue ，并确保你使用的是最新的 RemiliaBot 。
+        在提 issue 前请确保你仔细阅读过文档，搜索过现有的 issue ，并确保你使用的是最新的 remilia-bot 。
         
         在启动本项目出现错误时，你可以无视堆栈 (stack) 相关的信息，但错误信息 (Error: xxxxx) 请认真看看，自己稍微翻译翻译就知道大体意思，大部分问题你都可以在本项目文档或搜索引擎中找到解答。
         
         **这些 issue 不会被受理：**
         
         1. 文档中有提到的
-        2. 使用的 RemiliaBot 不是最新的
+        2. 使用的 remilia-bot 不是最新的
         3. 大部分“连接失败”问题，请自己排查配置等原因
 
   - type: checkboxes
@@ -48,8 +48,8 @@ body:
 
   - type: input
     attributes:
-      label: RemiliaBot
-      placeholder: 你所使用的 RemiliaBot 版本
+      label: remilia-bot
+      placeholder: 你所使用的 remilia-bot 版本
     validations:
       required: true
 
@@ -72,7 +72,7 @@ body:
     attributes:
       label: 列出安装的 Python 包
       placeholder: 把 pip freeze -l 执行的结果贴到此处。
-      description: 如果你不是通过 pip 下载的 RemiliaBot ，请把你安装的 Python 包列出来。
+      description: 如果你不是通过 pip 下载的 remilia-bot ，请把你安装的 Python 包列出来。
     validations:
       required: false
 

@@ -24,7 +24,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        在提 issue 前请确保你仔细阅读过文档，搜索过现有的 issue ，并确保你使用的是最新的 RemiliaBot ，避免发生 “提出的需求是已经实现了的” 这种令人哭笑不得的情况。
+        在提 issue 前请确保你仔细阅读过文档，搜索过现有的 issue ，并确保你使用的是最新的 remilia-bot ，避免发生 “提出的需求是已经实现了的” 这种令人哭笑不得的情况。
 
   - type: checkboxes
     attributes:
