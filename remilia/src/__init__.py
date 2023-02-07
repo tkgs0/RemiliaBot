@@ -1,5 +1,5 @@
 import sys
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telegram.ext import ApplicationBuilder
 
 from remilia.log import (
@@ -15,6 +15,14 @@ logging.basicConfig(handlers=[LoguruHandler()], level=logging.DEBUG)
 
 logger.remove()
 logger.add(sys.stdout, level=LOG_LEVEL, diagnose=False, format=default_format)
+
+
+scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+if not scheduler.running:
+    try:
+        scheduler.start()
+    except Exception as e:
+        logger.error(f"scheduler启动失败!\n{repr(e)}")
 
 
 from .plugins import (
