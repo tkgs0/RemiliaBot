@@ -1,9 +1,6 @@
 from typing import Literal
 from pathlib import Path
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
+import ujson as json
 
 from telegram import Update
 from telegram.ext import (
