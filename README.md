@@ -126,6 +126,6 @@ python -m remilia   # 运行 Bot
   在你要对Bot说的骚话前面加上Bot的昵称并发送  
   (昵称在config.yml中设置, 不是你在BotFather设置的Bot用户名)
 
-  - [x] **/setreply**
+  - [x] **/setreply**  
     设置回复模式 小爱/小思
 
