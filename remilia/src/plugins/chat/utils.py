@@ -3,6 +3,7 @@ from pathlib import Path
 import ujson as json
 from httpx import AsyncClient
 from urllib.parse import quote
+from string import punctuation, whitespace
 
 from remilia.log import logger
 from remilia.config import XIAOAI
@@ -56,6 +57,10 @@ async def xiaosi(msg: str, NICKNAME: str) -> str:
 
 # 从小爱api拿到消息
 async def xiaoai(msg: str, NICKNAME: str) -> str | bytes:
+
+    # 将半角标点和空白符号换成全角空格
+    for i in punctuation + whitespace:
+        msg = msg.replace(i, '　')
 
     n: dict = XIAOAI['mp3']
 
