@@ -1,15 +1,17 @@
 import yaml
 from pathlib import Path
 from pydantic import BaseModel, Extra
+from typing import List, Dict
 
 
 class Config(BaseModel, extra=Extra.ignore):
     LOG_LEVEL: str = 'INFO'
     TOKEN: str = ''
-    NICKNAME: list = ['remilia']
-    SUPERUSERS: list = []
-    SETU: dict = {'r18': 2, 'pixproxy': ''}
-    ACGGOV: dict = {'token': 'apikey', 'pixproxy': ''}
+    NICKNAME: List[str] = ['remilia']
+    SUPERUSERS: List[int] = []
+    SETU: Dict = {'r18': 2, 'pixproxy': ''}
+    ACGGOV: Dict = {'token': 'apikey', 'pixproxy': ''}
+    XIAOAI: Dict = {'mp3': False}
 
 
 default_config = """
@@ -38,6 +40,9 @@ ACGGOV:
   token: ''
   pixproxy: ''
 
+XIAOAI: 
+  mp3: false  # 当 mp3 为 true 时尝试使用语音发送
+
 """.strip()
 
 
@@ -56,9 +61,11 @@ if not filepath.is_file():
 config = yaml.safe_load(filepath.read_text('utf-8'))
 
 _config = Config.parse_obj(config)
+
 LOG_LEVEL: str = _config.LOG_LEVEL
 TOKEN: str = _config.TOKEN
-NICKNAME: list = _config.NICKNAME
-SUPERUSERS: list = _config.SUPERUSERS
-SETU: dict = _config.SETU
-ACGGOV: dict = _config.ACGGOV
+NICKNAME: List[str] = _config.NICKNAME
+SUPERUSERS: List[int] = _config.SUPERUSERS
+SETU: Dict = _config.SETU
+ACGGOV: Dict = _config.ACGGOV
+XIAOAI: Dict = _config.XIAOAI
