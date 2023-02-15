@@ -40,7 +40,6 @@ from .plugins import (
 class run():
     app = ApplicationBuilder().token(TOKEN).build()
 
-
     start.run(app)
     block.run(app)
     cmd.run(app)
@@ -51,6 +50,5 @@ class run():
     setu.run(app)
 
     chat.run(app)
-
 
     app.run_polling()
