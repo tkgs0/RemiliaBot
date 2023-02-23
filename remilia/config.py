@@ -5,6 +5,7 @@ from typing import List, Dict
 
 
 class Config(BaseModel, extra=Extra.ignore):
+    ConfigVersion: str = ''
     LOG_LEVEL: str = 'INFO'
     TOKEN: str = ''
     NICKNAME: List[str] = ['remilia']
@@ -12,9 +13,12 @@ class Config(BaseModel, extra=Extra.ignore):
     SETU: Dict = {'r18': 2, 'pixproxy': ''}
     ACGGOV: Dict = {'token': 'apikey', 'pixproxy': ''}
     XIAOAI: Dict = {'mp3': False}
+    CHATGPT: Dict = {'usr': '', 'pwd': ''}
 
 
 default_config = """
+
+ConfigVersion: '1.0.0'
 
 LOG_LEVEL: 'DEBUG'
 
@@ -43,6 +47,10 @@ ACGGOV:
 XIAOAI: 
   mp3: false  # 当 mp3 为 true 时尝试使用语音发送
 
+CHATGPT:  # ⚠注意: 本插件会将openai帐密上传到**第三方API**过`人机验证`来获取令牌
+  usr: ''  # openai 帐号
+  pwd: ''  # openai 密码
+
 """.strip()
 
 
@@ -54,13 +62,21 @@ if not filepath.is_file():
         filepath.write_text(default_config, encoding='utf-8')
     except Exception as e:
         print('生成配置文件失败!\n'+repr(e))
-    print('配置文件已生成, 请填写config.yml后重新启动Bot')
+    print('配置文件已生成, 请填写 config.yml 后重新启动Bot')
     exit(-1)
 
 
 config = yaml.safe_load(filepath.read_text('utf-8'))
 
 _config = Config.parse_obj(config)
+
+
+if _config.ConfigVersion != Config.parse_obj(
+    yaml.safe_load(default_config)
+).ConfigVersion:
+    print('config.yml 文件有更新, 请备份并删除后重新启动Bot')
+    exit(-1)
+
 
 LOG_LEVEL: str = _config.LOG_LEVEL
 TOKEN: str = _config.TOKEN
@@ -69,3 +85,4 @@ SUPERUSERS: List[int] = _config.SUPERUSERS
 SETU: Dict = _config.SETU
 ACGGOV: Dict = _config.ACGGOV
 XIAOAI: Dict = _config.XIAOAI
+CHATGPT: Dict = _config.CHATGPT
