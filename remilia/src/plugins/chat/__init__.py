@@ -1,4 +1,4 @@
-import random, asyncio
+import random
 from pathlib import Path
 import ujson as json
 from telegram import Update
@@ -134,13 +134,11 @@ async def reply(msg: str, NICKNAME: str, uid: int):
 async def get_gpt(msg: str, uid: int) -> str:
 
     if uid in SUPERUSERS and msg.startswith('清空对话列表'):
-        res = await asyncio.to_thread(gpt.clear_all_chat)
+        res = await gpt.clear_all_chat()
         return res if res else '已清空对话列表.'
 
     if msg.startswith('重置对话'):
-        res = await asyncio.to_thread(gpt.clear_chat, str(uid))
+        res = await gpt.clear_chat(str(uid))
         return res if res else '对话已重置.'
 
-    return await asyncio.to_thread(
-        gpt.get_chat, msg=msg, uid=str(uid)
-    ) if msg else 'ʕ  •ᴥ•ʔ ?'
+    return await gpt.get_chat(msg=msg, uid=str(uid)) if msg else 'ʕ  •ᴥ•ʔ ?'
