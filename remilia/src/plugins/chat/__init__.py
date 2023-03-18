@@ -18,7 +18,6 @@ from .utils import (
     hello__reply
 )
 from .looklike import Look
-from . import gpt
 
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
@@ -64,16 +63,14 @@ async def set_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conf['mode'] = 0
     elif msg == '小爱':
         conf['mode'] = 1
-    elif msg.lower() == 'gpt' or msg.lower() == 'chatgpt':
-        conf['mode'] = 2
     elif not msg:
-        conf['mode'] = conf['mode'] + 1 if conf['mode'] < 2 else 0
+        conf['mode'] = 0 if conf['mode'] else 1
     else:
         await update.message.chat.send_message('模式不存在.')
         return
 
     save_conf()
-    mode = ['小思', '小爱', 'ChatGPT']
+    mode = ['小思', '小爱']
     await update.message.chat.send_message(f'已设置回复模式{mode[conf["mode"]]}')
 
 
@@ -102,12 +99,12 @@ async def groupchat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def reply(msg: str, NICKNAME: str, uid: int):
 
+    uid = uid
+
     if not conf['mode']:
         get_reply = xiaosi
-    elif conf['mode'] == 1:
-        get_reply = xiaoai
     else:
-        return await get_gpt(msg=msg, uid=uid)
+        get_reply = xiaoai
 
     if not msg or msg in [
         "你好啊",
@@ -130,15 +127,3 @@ async def reply(msg: str, NICKNAME: str, uid: int):
         return content
     return result
 
-
-async def get_gpt(msg: str, uid: int) -> str:
-
-    if uid in SUPERUSERS and msg.startswith('清空对话列表'):
-        res = await gpt.clear_all_chat()
-        return res if res else '已清空对话列表.'
-
-    if msg.startswith('重置对话'):
-        res = await gpt.clear_chat(str(uid))
-        return res if res else '对话已重置.'
-
-    return await gpt.get_chat(msg=msg, uid=str(uid)) if msg else 'ʕ  •ᴥ•ʔ ?'

@@ -13,12 +13,11 @@ class Config(BaseModel, extra=Extra.ignore):
     SETU: Dict = {'r18': 2, 'pixproxy': ''}
     ACGGOV: Dict = {'token': 'apikey', 'pixproxy': ''}
     XIAOAI: Dict = {'mp3': False}
-    CHATGPT: Dict = {'usr': '', 'pwd': ''}
 
 
 default_config = """
 
-ConfigVersion: '1.0.0'
+ConfigVersion: '1.0.1'
 
 LOG_LEVEL: 'DEBUG'
 
@@ -46,10 +45,6 @@ ACGGOV:
 
 XIAOAI: 
   mp3: false  # 当 mp3 为 true 时尝试使用语音发送
-
-CHATGPT:  # ⚠注意: 本插件会将openai帐密上传到**第三方API**过`人机验证`来获取令牌
-  usr: ''  # openai 帐号
-  pwd: ''  # openai 密码
 
 """.strip()
 
@@ -85,4 +80,3 @@ SUPERUSERS: List[int] = _config.SUPERUSERS
 SETU: Dict = _config.SETU
 ACGGOV: Dict = _config.ACGGOV
 XIAOAI: Dict = _config.XIAOAI
-CHATGPT: Dict = _config.CHATGPT
