@@ -5,4 +5,3 @@ loguru
 APScheduler
 psutil
 ujson
-revChatGPT
