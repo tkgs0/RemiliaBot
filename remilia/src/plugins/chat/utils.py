@@ -2,7 +2,6 @@ import random
 from pathlib import Path
 import ujson as json
 from httpx import AsyncClient
-from urllib.parse import quote
 from string import punctuation, whitespace
 
 from remilia.log import logger
@@ -31,11 +30,15 @@ async def get_chat_result(text: str):
 # 从思知api拿到消息
 async def xiaosi(msg: str, NICKNAME: str) -> str:
 
+    # 将半角标点和空白符号换成全角空格
+    for i in punctuation + whitespace:
+        msg = msg.replace(i, '　')
+
     url = f'https://api.ownthink.com/bot'
     params = {
         'appid': 'xiaosi',
         'userid': 'user',
-        'spoken': quote(msg),
+        'spoken': msg,
     }
     headers = {
         'referer': 'https://www.ownthink.com/',
@@ -66,7 +69,7 @@ async def xiaoai(msg: str, NICKNAME: str) -> str | bytes:
 
     url = 'http://81.70.100.130/api/xiaoai.php'
     params = {
-        'msg': quote(msg),
+        'msg': msg,
         'n': 'mp3' if n else 'text',
     }
     headers = {
