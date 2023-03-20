@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "remilia-bot"
-version = "0.2.3"
+version = "0.2.4"
 description = "女生自用(?)电报机器人"
 authors = ["月ヶ瀬"]
 license = "GPL-3.0"
