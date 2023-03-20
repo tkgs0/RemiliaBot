@@ -7,6 +7,8 @@ from telegram import InputMediaPhoto
 from remilia.log import logger
 from remilia.config import SETU
 
+from .download import down_pic
+
 
 r18 = SETU['r18']
 pixproxy = SETU['pixproxy']
@@ -43,7 +45,7 @@ async def get_setu(tag=[], num=1) -> list:
                 )
             } for i in content]
 
-            pics, status = await down_pic(content)
+            pics, status = await down_pic(content, pixproxy)
 
             logger.success('complete.')
 
@@ -76,36 +78,3 @@ async def get_setu(tag=[], num=1) -> list:
         except:
             logger.warning(f'{exc_info()[0]}, {exc_info()[1]}')
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
-
-
-
-async def down_pic(content) -> tuple[list, list]:
-    async with AsyncClient() as client:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-        }
-        if not pixproxy:
-            headers = {
-                'Host': 'i.pximg.net',
-                'Referer': 'https://www.pixiv.net/',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
-            }
-        pics, status = [], []
-        for i in content:
-            res = await client.get(
-                url = (
-                    i['url'].replace('https://i.pixiv.re', pixproxy)
-                    if pixproxy
-                    else i['url'].replace('i.pixiv.re', 'i.pximg.net')
-                ),
-                headers=headers,
-                timeout=30
-            )
-            if res.status_code == 200:
-                logger.success(f'获取图片 {i["pid"]} 成功')
-                pics.append([res.content, i['caption']])
-            else:
-                logger.error(sc := f'获取图片 {i["pid"]} 失败: {res.status_code}')
-                status.append(sc)
-            await res.aclose()
-        return pics, status

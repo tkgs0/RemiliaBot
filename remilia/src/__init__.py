@@ -31,7 +31,6 @@ from .plugins import (
     cmd,
     code_runner,
     Gua64,
-    pix,
     setu,
     start,
     status
@@ -46,9 +45,7 @@ class run():
     status.run(app)
     code_runner.run(app)
     Gua64.run(app)
-    pix.run(app)
     setu.run(app)
-
     chat.run(app)
 
     app.run_polling()
