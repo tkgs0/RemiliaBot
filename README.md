@@ -9,7 +9,7 @@
 
 ```sh
 pip install remilia-bot   # 从 PyPI 安装 Bot
-python -m remilia   # 运行 Bot
+remilia   # 运行 Bot
 ```
 
 ### 功能表
