@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "remilia-bot"
-version = "0.2.6"
+version = "0.3.0"
 description = "女生自用(?)电报机器人"
 authors = ["月ヶ瀬"]
 license = "GPL-3.0"
@@ -23,6 +23,9 @@ psutil = ">=5.9.0"
 ujson = ">=5.2.0"
 
 [tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+remilia = "remilia.__main__:main"
 
 [tool.mypy]
 python_version = "3.9"
