@@ -1,4 +1,7 @@
-from remilia.src import run
+from . import run
+
+def main():
+    run()
 
 if __name__ == '__main__':
-    run()
+    main()

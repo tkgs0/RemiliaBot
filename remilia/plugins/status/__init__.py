@@ -5,7 +5,7 @@ from telegram.ext import (
     filters
 )
 
-from remilia.src import scheduler
+from remilia import scheduler
 from remilia.log import logger
 from remilia.config import SUPERUSERS
 from .data_source import get_status

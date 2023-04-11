@@ -18,12 +18,12 @@ hello__reply = [
     'ʕ  •ᴥ•ʔ ?',
 ]
 
+
 # 从字典里返还消息, 借鉴(抄)的zhenxun-bot
-async def get_chat_result(text: str):
+async def get_chat_result(text: str) -> str | None:
     if len(text) < 7:
-        keys = AnimeThesaurus.keys()
-        for key in keys:
-            if text.find(key) != -1:
+        for key in AnimeThesaurus.keys():
+            if key in text:
                 return random.choice(AnimeThesaurus[key])
 
 
